@@ -14,7 +14,7 @@ const sidebarNavItems = [
     icon: Home,
   },
   {
-    title: "Menu",
+    title: "Menú",
     href: "/dashboard/menu",
     icon: UtensilsCrossed,
   },

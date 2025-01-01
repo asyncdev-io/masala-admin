@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 
 const menuItems = [
   {
@@ -30,12 +31,14 @@ export default function MenuPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Menu Items</h1>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Item
+        <Button asChild>
+          <Link href="/dashboard/add">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Item
+          </Link>
         </Button>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4">
         {menuItems.map((item) => (
           <Card key={item.id}>
             <CardHeader>

@@ -7,34 +7,30 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ChefHat } from "lucide-react";
+import { useLoginMutation } from "@/lib/store/api";
+import Cookie from "js-cookie";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const [login, { isLoading }] = useLoginMutation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      const result = await login({ email, password }).unwrap();
 
-      const data = await response.json();
-
-      if (data.success) {
-        router.push('/dashboard');
+      if (result.success) {
+        Cookie.set("masala-admin-token", result.token);
+        router.push("/dashboard");
         router.refresh();
       } else {
         toast({
           title: "Error",
-          description: data.error || "Invalid credentials",
+          description: result.error || "Invalid credentials",
           variant: "destructive",
         });
       }
@@ -44,8 +40,6 @@ export default function LoginPage() {
         description: "An error occurred. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
