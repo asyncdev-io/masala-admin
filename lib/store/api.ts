@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Order } from "@/types/order";
+import { Restaurant, RestaurantRequest } from "@/types/restaurant";
 
 interface LoginRequest {
   email: string;
@@ -21,7 +22,7 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_MASALA_API_URL,
   }),
-  tagTypes: ["Orders", "Auth"],
+  tagTypes: ["Orders", "Auth", "Restaurants"],
   endpoints: (builder) => ({
     // Auth endpoints
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -61,6 +62,33 @@ export const api = createApi({
       invalidatesTags: (_result, _error, { id }) => [
         { type: "Orders", id },
         "Orders",
+      ],
+    }),
+
+    createRestaurant: builder.mutation<
+      Restaurant,
+      { adminId: string; data: RestaurantRequest }
+    >({
+      query: ({ adminId, data }) => ({
+        url: `/restaurants/${adminId}`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Restaurants"],
+    }),
+
+    updateRestaurant: builder.mutation<
+      Restaurant,
+      { adminId: string; id: string; data: Partial<RestaurantRequest> }
+    >({
+      query: ({ adminId, id, data }) => ({
+        url: `/restaurants/${adminId}/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Restaurants", id },
+        "Restaurants",
       ],
     }),
   }),

@@ -34,7 +34,7 @@ export default function MenuPage() {
         <Button asChild>
           <Link href="/dashboard/add">
             <Plus className="mr-2 h-4 w-4" />
-            Add Item
+            Agregar Platillo
           </Link>
         </Button>
       </div>
