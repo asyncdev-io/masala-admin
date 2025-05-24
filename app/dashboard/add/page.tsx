@@ -1,3 +1,5 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,8 +12,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRef } from "react";
+import { useCreateMenuCategoryMutation } from "@/lib/store/api";
 
 export default function AddPage() {
+  const menuNameRef = useRef<string>('');
+  const [ createMenuCategory ] = useCreateMenuCategoryMutation();
+
+  async function handleCreateMenuCategory(e: React.FormEvent) {
+    e.preventDefault();
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Agregar platillo</h1>
@@ -21,17 +32,10 @@ export default function AddPage() {
             <CardTitle>Nueva Categoría de Menú</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleCreateMenuCategory}>
               <div className="space-y-2">
                 <Label htmlFor="category-name">Nombre de Categoría</Label>
-                <Input id="category-name" placeholder="e.g., Main Course" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="category-description">URL de imagen</Label>
-                <Input
-                  id="category-description"
-                  placeholder="Enter category description"
-                />
+                <Input id="category-name" placeholder="e.g., Main Course" onChange={(e) => menuNameRef.current = e.target.value} />
               </div>
               <Button type="submit">Agregar Categoría</Button>
             </form>

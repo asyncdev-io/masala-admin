@@ -31,7 +31,7 @@ export default function ProfilePage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Categoría</Label>
-                <Input id="email" type="email" placeholder="Enter email" />
+                <Input id="email" type="email" placeholder="Enter category" />
               </div>
             </div>
             <Button type="submit">Guardar</Button>
