@@ -4,13 +4,15 @@ interface RestaurantState {
   selectedRestaurant: {
     id: string | null;
     name: string | null;
+    menuId: string | null;
   };
 }
 
 const initialState: RestaurantState = {
   selectedRestaurant: {
     id: null,
-    name: null
+    name: null,
+    menuId: null
   }
 };
 
@@ -18,7 +20,7 @@ const restaurantSlice = createSlice({
   name: 'restaurant',
   initialState,
   reducers: {
-    setSelectedRestaurant: (state, action: PayloadAction<{ id: string | null; name: string | null }>) => {
+    setSelectedRestaurant: (state, action: PayloadAction<{ id: string | null; name: string | null, menuId: string | null }>) => {
       state.selectedRestaurant = action.payload;
     },
   },

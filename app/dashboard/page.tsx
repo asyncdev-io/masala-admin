@@ -18,7 +18,8 @@ export default function DashboardPage() {
     if (selectedRestaurant) {
       dispatch(setSelectedRestaurant({
         id: selectedRestaurant.id,
-        name: selectedRestaurant.name
+        name: selectedRestaurant.name,
+        menuId: selectedRestaurant.menu.id
       }));
     }
   };
@@ -37,7 +38,7 @@ export default function DashboardPage() {
             {
               !restaurants &&
               <SelectItem key={1} value={'-1'}>
-                'No tienes restaurantes que administrar'
+                No tienes restaurantes que administrar
               </SelectItem>
             }
             {restaurants?.map((restaurant) => (

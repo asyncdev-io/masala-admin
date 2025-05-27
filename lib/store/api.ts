@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Order } from "@/types/order";
 import { Restaurant, RestaurantRequest } from "@/types/restaurant";
 import Cookie from "js-cookie"
+import { Category } from "@/types/category";
 
 interface LoginRequest {
   email: string;
@@ -20,15 +21,9 @@ interface MenuCategoryRequest {
 }
 
 interface MenuCategoryResponse {
-  status: number,
-  description: string,
-  schema: {
-    example: {
-      id: string,
-      name: string,
-      menuId: string,
-    },
-  }
+  success: boolean;
+  message: string;
+  category: Category;
 }
 
 export const api = createApi({
@@ -37,7 +32,7 @@ export const api = createApi({
     baseUrl: process.env.NEXT_PUBLIC_MASALA_API_URL,
     prepareHeaders: (headers) => {
       const token = Cookie.get("masala-admin-token");
-      if(token) {
+      if (token) {
         headers.set('Authorization', `Bearer ${token}`)
       }
       return headers;
@@ -108,7 +103,8 @@ export const api = createApi({
     }),
 
     getMyRestaurants: builder.query<Restaurant[], void>({
-      query: () => "/restaurants/admin/restaurants"
+      query: () => "/restaurants/admin/restaurants",
+      providesTags: ["Restaurants"]
     }),
 
     // Menu categories endpoint
