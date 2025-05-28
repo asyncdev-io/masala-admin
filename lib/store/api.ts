@@ -3,6 +3,7 @@ import { Order } from "@/types/order";
 import { Restaurant, RestaurantRequest } from "@/types/restaurant";
 import Cookie from "js-cookie"
 import { Category } from "@/types/category";
+import { MenuImportRequest, MenuImportResponse } from "@/types/menu";
 
 interface LoginRequest {
   email: string;
@@ -114,6 +115,15 @@ export const api = createApi({
         method: "POST",
         body: data,
       })
+    }),
+
+    // Menu items endpoint
+    importMenu: builder.mutation<MenuImportResponse, MenuImportRequest>({
+      query: (data) => ({
+        url: "/menus/restaurant/import",
+        method: "POST",
+        body: data
+      })
     })
   }),
 });
@@ -124,5 +134,6 @@ export const {
   useGetOrderQuery,
   useUpdateOrderStatusMutation,
   useGetMyRestaurantsQuery,
-  useCreateMenuCategoryMutation
+  useCreateMenuCategoryMutation,
+  useImportMenuMutation
 } = api;
