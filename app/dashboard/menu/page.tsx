@@ -1,3 +1,6 @@
+"use client"
+
+import ModalImportMenu from "@/components/modal-import-menu";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,8 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { RootState } from "@/lib/store/store";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const menuItems = [
   {
@@ -27,10 +33,28 @@ const menuItems = [
 ];
 
 export default function MenuPage() {
+  const selectedRestaurantMenuId = useSelector((state: RootState) => state.restaurant.selectedRestaurant.menuId);
+  const [showModalMenuImport, setShowModalMenuImport] = useState(false);
+
   return (
     <div className="space-y-6">
+      {
+        showModalMenuImport && <ModalImportMenu showModalMenuImport={setShowModalMenuImport}/>
+      }
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Menu Items</h1>
+        <Button asChild>
+          {
+            selectedRestaurantMenuId ?
+            <button onClick={() => setShowModalMenuImport(true)}>
+              Importe un menu de otro restaurante
+            </button>
+            :
+            <Link href={'/dashboard'}>
+              Defina el resutarante que quiere administrar para importar un menu
+            </Link>
+          }
+        </Button>
         <Button asChild>
           <Link href="/dashboard/add">
             <Plus className="mr-2 h-4 w-4" />

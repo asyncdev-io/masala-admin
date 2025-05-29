@@ -11,29 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useToast } from "@/hooks/use-toast";
+import Cookies from "js-cookie";
 
 export function UserNav() {
   const router = useRouter();
-  const { toast } = useToast();
 
   const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-      });
-
-      if (response.ok) {
-        router.push('/login');
-        router.refresh();
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to logout. Please try again.",
-        variant: "destructive",
-      });
-    }
+    Cookies.remove("masala-admin-token");
+    router.push("/login");
+    router.refresh();
   };
 
   return (

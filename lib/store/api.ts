@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Order } from "@/types/order";
 import { Restaurant, RestaurantRequest } from "@/types/restaurant";
+import Cookie from "js-cookie"
+import { Category } from "@/types/category";
+import { MenuImportRequest, MenuImportResponse } from "@/types/menu";
 
 interface LoginRequest {
   email: string;
@@ -13,14 +16,28 @@ interface LoginResponse {
   token: string;
 }
 
-interface LogoutResponse {
+interface MenuCategoryRequest {
+  menuId: string;
+  name: string;
+}
+
+interface MenuCategoryResponse {
   success: boolean;
+  message: string;
+  category: Category;
 }
 
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_MASALA_API_URL,
+    prepareHeaders: (headers) => {
+      const token = Cookie.get("masala-admin-token");
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`)
+      }
+      return headers;
+    }
   }),
   tagTypes: ["Orders", "Auth", "Restaurants"],
   endpoints: (builder) => ({
@@ -30,13 +47,6 @@ export const api = createApi({
         url: "/auth/login-admin",
         method: "POST",
         body: credentials,
-      }),
-      invalidatesTags: ["Auth"],
-    }),
-    logout: builder.mutation<LogoutResponse, void>({
-      query: () => ({
-        url: "/auth/logout",
-        method: "POST",
       }),
       invalidatesTags: ["Auth"],
     }),
@@ -65,6 +75,7 @@ export const api = createApi({
       ],
     }),
 
+    // Restaurants endpoints
     createRestaurant: builder.mutation<
       Restaurant,
       { adminId: string; data: RestaurantRequest }
@@ -91,13 +102,38 @@ export const api = createApi({
         "Restaurants",
       ],
     }),
+
+    getMyRestaurants: builder.query<Restaurant[], void>({
+      query: () => "/restaurants/admin/restaurants",
+      providesTags: ["Restaurants"]
+    }),
+
+    // Menu categories endpoint
+    createMenuCategory: builder.mutation<MenuCategoryResponse, MenuCategoryRequest>({
+      query: (data) => ({
+        url: "/menu-categories",
+        method: "POST",
+        body: data,
+      })
+    }),
+
+    // Menu items endpoint
+    importMenu: builder.mutation<MenuImportResponse, MenuImportRequest>({
+      query: (data) => ({
+        url: "/menus/restaurant/import",
+        method: "POST",
+        body: data
+      })
+    })
   }),
 });
 
 export const {
   useLoginMutation,
-  useLogoutMutation,
   useGetOrdersQuery,
   useGetOrderQuery,
   useUpdateOrderStatusMutation,
+  useGetMyRestaurantsQuery,
+  useCreateMenuCategoryMutation,
+  useImportMenuMutation
 } = api;

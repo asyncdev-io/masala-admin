@@ -1,3 +1,5 @@
+import { Menu } from "./menu";
+
 export interface RestaurantRequest {
   name: string;
   description: string;
@@ -11,4 +13,5 @@ export interface Restaurant extends RestaurantRequest {
   adminId: string;
   createdAt: string;
   updatedAt: string;
+  menu: Menu;
 }
