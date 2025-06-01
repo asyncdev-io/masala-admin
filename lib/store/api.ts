@@ -4,6 +4,7 @@ import { Restaurant, RestaurantRequest } from "@/types/restaurant";
 import Cookie from "js-cookie"
 import { Category } from "@/types/category";
 import { MenuImportRequest, MenuImportResponse } from "@/types/menu";
+import { CreateMealRequest, CreateMealResponse } from "@/types/meal";
 
 interface LoginRequest {
   email: string;
@@ -117,10 +118,23 @@ export const api = createApi({
       })
     }),
 
+    getMenuCategories: builder.query<Category[], string>({
+      query: (menuId) => `/menu-categories/${menuId}`
+    }),
+
     // Menu items endpoint
     importMenu: builder.mutation<MenuImportResponse, MenuImportRequest>({
       query: (data) => ({
         url: "/menus/restaurant/import",
+        method: "POST",
+        body: data
+      })
+    }),
+
+    // Meals endpoints
+    createMeal: builder.mutation<CreateMealResponse, FormData>({
+      query: (data) => ({
+        url: "/meals",
         method: "POST",
         body: data
       })
@@ -135,5 +149,7 @@ export const {
   useUpdateOrderStatusMutation,
   useGetMyRestaurantsQuery,
   useCreateMenuCategoryMutation,
-  useImportMenuMutation
+  useGetMenuCategoriesQuery,
+  useImportMenuMutation,
+  useCreateMealMutation
 } = api;
