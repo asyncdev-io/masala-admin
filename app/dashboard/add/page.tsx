@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
 import Link from "next/link";
 import { CreateMealRequest } from "@/types/meal";
+import Loader from "@/components/ui/loader";
 
 export default function AddPage() {
   const menuNameRef = useRef<string>('');
@@ -37,7 +38,11 @@ export default function AddPage() {
     categoryId: '',
     metadata: {},
     menuId: ''
-  })
+  });
+  const [isLoading, setIsLoading] = useState({
+    createMenuCategory: false,
+    createMeal: false,
+  });
   const selectedRestaurantMenuId = useSelector((state: RootState) => state.restaurant.selectedRestaurant.menuId);
   const [createMenuCategory] = useCreateMenuCategoryMutation();
   const [createMeal] = useCreateMealMutation();
@@ -46,6 +51,11 @@ export default function AddPage() {
 
   async function handleCreateMenuCategory(e: React.FormEvent) {
     e.preventDefault();
+
+    setMenuCategoryResponseMessage({
+      success: '',
+      error: ''
+    });
 
     if (menuNameRef.current.length === 0) {
       setMenuCategoryResponseMessage({
@@ -61,6 +71,11 @@ export default function AddPage() {
       });
       return;
     }
+
+    setIsLoading({
+      ...isLoading,
+      createMenuCategory: true,
+    });
 
     const result = await createMenuCategory({
       name: menuNameRef.current,
@@ -78,6 +93,11 @@ export default function AddPage() {
         success: result.message,
       });
     }
+
+    setIsLoading({
+      ...isLoading,
+      createMenuCategory: false,
+    });
   }
 
   function handleMealDetilChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -93,6 +113,11 @@ export default function AddPage() {
   async function handleCreateMeal(e: React.FormEvent) {
     e.preventDefault();
 
+    setMealResponse({
+      success: '',
+      error: ''
+    });
+
     const formData = new FormData();
     formData.append('name', mealDetailsRef.current.name);
     formData.append('price', mealDetailsRef.current.price.toString());
@@ -101,6 +126,25 @@ export default function AddPage() {
     formData.append('categoryId', mealDetailsRef.current.categoryId);
     formData.append('menuId', selectedRestaurantMenuId || '');
     formData.append('imageFile', uploadImgInputRef.current?.files?.[0] || '');
+
+    if (
+      !mealDetailsRef.current.name ||
+      !mealDetailsRef.current.description ||
+      mealDetailsRef.current.categoryId === "-1" ||
+      !mealDetailsRef.current.price ||
+      !uploadImgInputRef.current?.files?.[0]
+    ) {
+      setMealResponse({
+        ...mealResponse,
+        error: 'Asegurate de que todas las propiedades esten definidas'
+      });
+      return;
+    }
+
+    setIsLoading({
+      ...isLoading,
+      createMeal: true,
+    });
 
     const response = await createMeal(formData).unwrap();
 
@@ -125,6 +169,11 @@ export default function AddPage() {
         error: ''
       });
     }
+
+    setIsLoading({
+      ...isLoading,
+      createMeal: false,
+    });
   }
 
   return (
@@ -149,6 +198,7 @@ export default function AddPage() {
                 <Input id="category-name" placeholder="e.g., Main Course" onChange={(e) => menuNameRef.current = e.target.value} />
               </div>
               <Button type="submit">Agregar Categoría</Button>
+              {isLoading.createMenuCategory && <Loader />}
               {menuCategoryResponseMessage.error && <p className="text-red-500">{menuCategoryResponseMessage.error}</p>}
               {menuCategoryResponseMessage.success && <p className="text-green-500">{menuCategoryResponseMessage.success}</p>}
             </form>
@@ -179,7 +229,7 @@ export default function AddPage() {
                       ))
                     }
                     {
-                      !categories && <SelectItem value="-1">No hay categorías</SelectItem>
+                      !categories && <SelectItem value="-1">No hay categorías, asegurate de que hayas seleccionado un restaurante</SelectItem>
                     }
                   </SelectContent>
                 </Select>
@@ -215,6 +265,7 @@ export default function AddPage() {
               </div>
               <Button type="submit">Agregar platillo</Button>
 
+              {isLoading.createMeal && <Loader />}
               {
                 mealResponse.error && <p className="text-red-500">{mealResponse.error}</p>
               }
