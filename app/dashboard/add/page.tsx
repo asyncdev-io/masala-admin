@@ -13,24 +13,51 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRef, useState } from "react";
-import { useCreateMenuCategoryMutation } from "@/lib/store/api";
+import { useCreateMealMutation, useCreateMenuCategoryMutation, useGetMenuCategoriesQuery } from "@/lib/store/api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
 import Link from "next/link";
+import { CreateMealRequest } from "@/types/meal";
+import Loader from "@/components/ui/loader";
 
 export default function AddPage() {
-  const menuNameRef = useRef<string>('');
+  const [menuName, setMenuName] = useState('');
   const [menuCategoryResponseMessage, setMenuCategoryResponseMessage] = useState({
     error: '',
     success: ''
   });
+  const [mealResponse, setMealResponse] = useState({
+    error: '',
+    success: ''
+  });
+  const [mealDetails, setMealDetails] = useState({
+    name: '',
+    price: 0,
+    description: '',
+    imageUrl: '',
+    categoryId: '',
+    metadata: {},
+    menuId: ''
+  });
+  const [isLoading, setIsLoading] = useState({
+    createMenuCategory: false,
+    createMeal: false,
+  });
   const selectedRestaurantMenuId = useSelector((state: RootState) => state.restaurant.selectedRestaurant.menuId);
   const [createMenuCategory] = useCreateMenuCategoryMutation();
+  const [createMeal] = useCreateMealMutation();
+  const { data: categories } = useGetMenuCategoriesQuery(selectedRestaurantMenuId || '');
+  const uploadImgInputRef = useRef<HTMLInputElement>(null);
 
   async function handleCreateMenuCategory(e: React.FormEvent) {
     e.preventDefault();
 
-    if (menuNameRef.current.length === 0) {
+    setMenuCategoryResponseMessage({
+      success: '',
+      error: ''
+    });
+
+    if (menuName.length === 0) {
       setMenuCategoryResponseMessage({
         ...menuCategoryResponseMessage,
         error: 'El nombre de la categoría es requerido',
@@ -45,12 +72,15 @@ export default function AddPage() {
       return;
     }
 
+    setIsLoading({
+      ...isLoading,
+      createMenuCategory: true,
+    });
+
     const result = await createMenuCategory({
-      name: menuNameRef.current,
+      name: menuName,
       menuId: selectedRestaurantMenuId,
     }).unwrap();
-
-    console.log(result);
 
     if (!result.success) {
       setMenuCategoryResponseMessage({
@@ -63,6 +93,104 @@ export default function AddPage() {
         success: result.message,
       });
     }
+
+    setIsLoading({
+      ...isLoading,
+      createMenuCategory: false,
+    });
+    setMenuName('');
+  }
+
+  function handleMealDetilChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const { dataset, value } = e.target;
+    const field = dataset.menuDetailField as keyof Omit<CreateMealRequest, 'metadata'>;
+    if (field === 'price') {
+      setMealDetails({
+        ...mealDetails,
+        price: parseFloat(value),
+      })
+    } else {
+      setMealDetails({
+        ...mealDetails,
+        [field]: value,
+      });
+    }
+  }
+
+  async function handleCreateMeal(e: React.FormEvent) {
+    e.preventDefault();
+
+    setMealResponse({
+      success: '',
+      error: ''
+    });
+
+    const formData = new FormData();
+    formData.append('name', mealDetails.name);
+    formData.append('price', mealDetails.price.toString());
+    formData.append('description', mealDetails.description);
+    formData.append('imageUrl', '');
+    formData.append('categoryId', mealDetails.categoryId);
+    formData.append('menuId', selectedRestaurantMenuId || '');
+    formData.append('imageFile', uploadImgInputRef.current?.files?.[0] || '');
+
+    if (
+      !mealDetails.name ||
+      !mealDetails.description ||
+      mealDetails.categoryId === "-1" ||
+      !mealDetails.price ||
+      !uploadImgInputRef.current?.files?.[0]
+    ) {
+      setMealResponse({
+        ...mealResponse,
+        error: 'Asegurate de que todas las propiedades esten definidas'
+      });
+      return;
+    }
+
+    setIsLoading({
+      ...isLoading,
+      createMeal: true,
+    });
+
+    const response = await createMeal(formData).unwrap();
+
+    if (response.error || !response.success) {
+      if (response.statusCode === 400) {
+        setMealResponse({
+          ...mealResponse,
+          error: 'Todos los campos son requeridos y la imagen debe ser de tipo: jpeg, png o webp',
+        });
+      }
+      setMealResponse({
+        ...mealResponse,
+        error: response.message,
+        success: ''
+      });
+    }
+
+    if (response.success) {
+      setMealResponse({
+        ...mealResponse,
+        success: response.message,
+        error: ''
+      });
+    }
+
+    setIsLoading({
+      ...isLoading,
+      createMeal: false,
+    });
+
+    setMealDetails({
+      name: '',
+      price: 0,
+      description: '',
+      imageUrl: '',
+      categoryId: '',
+      metadata: {},
+      menuId: ''
+    });
   }
 
   return (
@@ -84,9 +212,10 @@ export default function AddPage() {
             <form className="space-y-4" onSubmit={handleCreateMenuCategory}>
               <div className="space-y-2">
                 <Label htmlFor="category-name">Nombre de Categoría</Label>
-                <Input id="category-name" placeholder="e.g., Main Course" onChange={(e) => menuNameRef.current = e.target.value} />
+                <Input id="category-name" value={menuName} placeholder="e.g., Main Course" onChange={(e) => setMenuName(e.target.value)} />
               </div>
               <Button type="submit">Agregar Categoría</Button>
+              {isLoading.createMenuCategory && <Loader />}
               {menuCategoryResponseMessage.error && <p className="text-red-500">{menuCategoryResponseMessage.error}</p>}
               {menuCategoryResponseMessage.success && <p className="text-green-500">{menuCategoryResponseMessage.success}</p>}
             </form>
@@ -98,21 +227,27 @@ export default function AddPage() {
             <CardTitle>Nuevo platillo</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={(e) => handleCreateMeal(e)}>
               <div className="space-y-2">
                 <Label htmlFor="dish-name">Nombre</Label>
-                <Input id="dish-name" placeholder="e.g., Classic Burger" />
+                <Input id="dish-name" value={mealDetails.name} placeholder="e.g., Classic Burger" data-menu-detail-field="name" onChange={handleMealDetilChange} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="category">Categoría</Label>
-                <Select>
+                <Select value={mealDetails.categoryId} onValueChange={(value) => setMealDetails({ ...mealDetails, categoryId: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona una categoría" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="main">Main Course</SelectItem>
-                    <SelectItem value="starter">Starters</SelectItem>
-                    <SelectItem value="dessert">Desserts</SelectItem>
+                    {/*! TODO: Replace this categories by real categories */}
+                    {
+                      categories && categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+                      ))
+                    }
+                    {
+                      !categories && <SelectItem value="-1">No hay categorías, asegurate de que hayas seleccionado un restaurante</SelectItem>
+                    }
                   </SelectContent>
                 </Select>
               </div>
@@ -121,21 +256,41 @@ export default function AddPage() {
                 <Input
                   id="price"
                   type="number"
+                  value={mealDetails.price}
                   placeholder="Coloca el precio"
+                  data-menu-detail-field="price"
+                  onChange={handleMealDetilChange}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="dish-name">URL imagen</Label>
-                <Input id="dish-name" placeholder="URL imagen" />
+                <Input
+                  type="file"
+                  accept="image/png, image/jpeg, image/webp"
+                  id="dish-name"
+                  placeholder="URL imagen"
+                  data-menu-detail-field="imageUrl" onChange={handleMealDetilChange}
+                  ref={uploadImgInputRef} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">Descripción</Label>
                 <Textarea
                   id="description"
+                  value={mealDetails.description}
                   placeholder="Coloca la descripción del platillo"
+                  data-menu-detail-field="description"
+                  onChange={handleMealDetilChange}
                 />
               </div>
               <Button type="submit">Agregar platillo</Button>
+
+              {isLoading.createMeal && <Loader />}
+              {
+                mealResponse.error && <p className="text-red-500">{mealResponse.error}</p>
+              }
+              {
+                mealResponse.success && <p className="text-green-500">{mealResponse.success}</p>
+              }
             </form>
           </CardContent>
         </Card>
