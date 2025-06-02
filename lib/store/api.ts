@@ -40,7 +40,7 @@ export const api = createApi({
       return headers;
     }
   }),
-  tagTypes: ["Orders", "Auth", "Restaurants"],
+  tagTypes: ["Orders", "Auth", "Restaurants", "MenuCategories"],
   endpoints: (builder) => ({
     // Auth endpoints
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -115,11 +115,13 @@ export const api = createApi({
         url: "/menu-categories",
         method: "POST",
         body: data,
-      })
+      }),
+      invalidatesTags: ["MenuCategories"]
     }),
 
     getMenuCategories: builder.query<Category[], string>({
-      query: (menuId) => `/menu-categories/${menuId}`
+      query: (menuId) => `/menu-categories/${menuId}`,
+      providesTags: ["MenuCategories"]
     }),
 
     // Menu items endpoint

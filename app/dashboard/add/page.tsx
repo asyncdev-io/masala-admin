@@ -21,7 +21,7 @@ import { CreateMealRequest } from "@/types/meal";
 import Loader from "@/components/ui/loader";
 
 export default function AddPage() {
-  const menuNameRef = useRef<string>('');
+  const [menuName, setMenuName] = useState('');
   const [menuCategoryResponseMessage, setMenuCategoryResponseMessage] = useState({
     error: '',
     success: ''
@@ -30,7 +30,7 @@ export default function AddPage() {
     error: '',
     success: ''
   });
-  const mealDetailsRef = useRef<CreateMealRequest>({
+  const [mealDetails, setMealDetails] = useState({
     name: '',
     price: 0,
     description: '',
@@ -57,7 +57,7 @@ export default function AddPage() {
       error: ''
     });
 
-    if (menuNameRef.current.length === 0) {
+    if (menuName.length === 0) {
       setMenuCategoryResponseMessage({
         ...menuCategoryResponseMessage,
         error: 'El nombre de la categoría es requerido',
@@ -78,7 +78,7 @@ export default function AddPage() {
     });
 
     const result = await createMenuCategory({
-      name: menuNameRef.current,
+      name: menuName,
       menuId: selectedRestaurantMenuId,
     }).unwrap();
 
@@ -98,15 +98,22 @@ export default function AddPage() {
       ...isLoading,
       createMenuCategory: false,
     });
+    setMenuName('');
   }
 
   function handleMealDetilChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { dataset, value } = e.target;
     const field = dataset.menuDetailField as keyof Omit<CreateMealRequest, 'metadata'>;
     if (field === 'price') {
-      mealDetailsRef.current[field] = parseFloat(value);
+      setMealDetails({
+        ...mealDetails,
+        price: parseFloat(value),
+      })
     } else {
-      mealDetailsRef.current[field] = value;
+      setMealDetails({
+        ...mealDetails,
+        [field]: value,
+      });
     }
   }
 
@@ -119,19 +126,19 @@ export default function AddPage() {
     });
 
     const formData = new FormData();
-    formData.append('name', mealDetailsRef.current.name);
-    formData.append('price', mealDetailsRef.current.price.toString());
-    formData.append('description', mealDetailsRef.current.description);
+    formData.append('name', mealDetails.name);
+    formData.append('price', mealDetails.price.toString());
+    formData.append('description', mealDetails.description);
     formData.append('imageUrl', '');
-    formData.append('categoryId', mealDetailsRef.current.categoryId);
+    formData.append('categoryId', mealDetails.categoryId);
     formData.append('menuId', selectedRestaurantMenuId || '');
     formData.append('imageFile', uploadImgInputRef.current?.files?.[0] || '');
 
     if (
-      !mealDetailsRef.current.name ||
-      !mealDetailsRef.current.description ||
-      mealDetailsRef.current.categoryId === "-1" ||
-      !mealDetailsRef.current.price ||
+      !mealDetails.name ||
+      !mealDetails.description ||
+      mealDetails.categoryId === "-1" ||
+      !mealDetails.price ||
       !uploadImgInputRef.current?.files?.[0]
     ) {
       setMealResponse({
@@ -174,6 +181,16 @@ export default function AddPage() {
       ...isLoading,
       createMeal: false,
     });
+
+    setMealDetails({
+      name: '',
+      price: 0,
+      description: '',
+      imageUrl: '',
+      categoryId: '',
+      metadata: {},
+      menuId: ''
+    });
   }
 
   return (
@@ -195,7 +212,7 @@ export default function AddPage() {
             <form className="space-y-4" onSubmit={handleCreateMenuCategory}>
               <div className="space-y-2">
                 <Label htmlFor="category-name">Nombre de Categoría</Label>
-                <Input id="category-name" placeholder="e.g., Main Course" onChange={(e) => menuNameRef.current = e.target.value} />
+                <Input id="category-name" value={menuName} placeholder="e.g., Main Course" onChange={(e) => setMenuName(e.target.value)} />
               </div>
               <Button type="submit">Agregar Categoría</Button>
               {isLoading.createMenuCategory && <Loader />}
@@ -213,11 +230,11 @@ export default function AddPage() {
             <form className="space-y-4" onSubmit={(e) => handleCreateMeal(e)}>
               <div className="space-y-2">
                 <Label htmlFor="dish-name">Nombre</Label>
-                <Input id="dish-name" placeholder="e.g., Classic Burger" data-menu-detail-field="name" onChange={handleMealDetilChange} />
+                <Input id="dish-name" value={mealDetails.name} placeholder="e.g., Classic Burger" data-menu-detail-field="name" onChange={handleMealDetilChange} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="category">Categoría</Label>
-                <Select onValueChange={(value) => mealDetailsRef.current = { ...mealDetailsRef.current, categoryId: value }}>
+                <Select value={mealDetails.categoryId} onValueChange={(value) => setMealDetails({ ...mealDetails, categoryId: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona una categoría" />
                   </SelectTrigger>
@@ -239,6 +256,7 @@ export default function AddPage() {
                 <Input
                   id="price"
                   type="number"
+                  value={mealDetails.price}
                   placeholder="Coloca el precio"
                   data-menu-detail-field="price"
                   onChange={handleMealDetilChange}
@@ -258,6 +276,7 @@ export default function AddPage() {
                 <Label htmlFor="description">Descripción</Label>
                 <Textarea
                   id="description"
+                  value={mealDetails.description}
                   placeholder="Coloca la descripción del platillo"
                   data-menu-detail-field="description"
                   onChange={handleMealDetilChange}
