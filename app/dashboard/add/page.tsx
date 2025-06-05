@@ -239,7 +239,6 @@ export default function AddPage() {
                     <SelectValue placeholder="Selecciona una categoría" />
                   </SelectTrigger>
                   <SelectContent>
-                    {/*! TODO: Replace this categories by real categories */}
                     {
                       categories && categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
