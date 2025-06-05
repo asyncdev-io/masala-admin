@@ -3,11 +3,12 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { UserNav } from "@/components/user-nav";
-import { ChefHat } from "lucide-react";
+import { Check, ChefHat } from "lucide-react";
 import { MobileNav } from "@/components/mobile-nav";
 import { MainNav } from "@/components/main-nav";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
+import Link from "next/link";
 
 export default function DashboardLayout({
   children,
@@ -33,9 +34,19 @@ export default function DashboardLayout({
       <div className="flex-1">
         <header className="flex h-14 items-center gap-4 border-b bg-white px-6">
           {selectedRestaurant.name && (
-            <span className="text-sm font-bold">
-              {selectedRestaurant.name}
-            </span>
+            <div className="flex place-items-center gap-2 text-sm font-bold">
+              <span>{selectedRestaurant.name}</span>
+              {
+                selectedRestaurant.hasCompleteOnboarding ?
+                // Checkmark
+                <span className="bg-green-300 rounded-full p-1"><Check className="h-6 w-6"/></span>
+                :
+                // Button to complete onboarding
+                <Link href={`/onboarding/reauth?restaurantId=${selectedRestaurant.id}`} className="ml-2 px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">
+                  Completar onboarding
+                </Link>
+              }
+            </div>
           )}
           <div className="flex-1" />
           <MobileNav />

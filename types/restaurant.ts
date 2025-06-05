@@ -8,6 +8,10 @@ export interface RestaurantRequest {
   labelIds: string[];
 }
 
+export interface RestaurantReAuthOnboardingRequest {
+  restaurantId: string;
+}
+
 export interface CreateRestaurantRequest {
   name: string;
   description: string;
@@ -30,6 +34,7 @@ export interface Restaurant extends RestaurantRequest {
   createdAt: string;
   updatedAt: string;
   menu: Menu;
+  onboardingComplete: boolean;
 }
 
 export interface RestaurantOnboardingCompleteResponse {

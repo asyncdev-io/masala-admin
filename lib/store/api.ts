@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Order } from "@/types/order";
-import { CreateRestaurantRequest, CreateRestaurantResponse, Restaurant, RestaurantOnboardingCompleteResponse, RestaurantRequest } from "@/types/restaurant";
+import { CreateRestaurantRequest, CreateRestaurantResponse, Restaurant, RestaurantOnboardingCompleteResponse, RestaurantReAuthOnboardingRequest, RestaurantRequest } from "@/types/restaurant";
 import Cookie from "js-cookie"
 import { Category } from "@/types/category";
 import { MenuImportRequest, MenuImportResponse } from "@/types/menu";
@@ -115,6 +115,13 @@ export const api = createApi({
       invalidatesTags: ["Restaurants"]
     }),
 
+    reauthOnboarding: builder.query<Pick<CreateRestaurantResponse, 'stripeOnboardingUrl'>, RestaurantReAuthOnboardingRequest>({
+      query: ({restaurantId}) => ({
+        url: `/restaurants/onboarding/re-auth/${restaurantId}`,
+        method: "GET"
+      }),
+    }),
+
     // Menu categories endpoint
     createMenuCategory: builder.mutation<MenuCategoryResponse, MenuCategoryRequest>({
       query: (data) => ({
@@ -168,6 +175,7 @@ export const {
   useGetMyRestaurantsQuery,
   useCreateRestaurantMutation,
   useCompleteRestaurantOnboardingMutation,
+  useReauthOnboardingQuery,
   useCreateMenuCategoryMutation,
   useGetMenuCategoriesQuery,
   useImportMenuMutation,
