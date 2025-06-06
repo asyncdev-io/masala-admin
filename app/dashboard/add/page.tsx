@@ -119,78 +119,84 @@ export default function AddPage() {
 
   async function handleCreateMeal(e: React.FormEvent) {
     e.preventDefault();
-
-    setMealResponse({
-      success: '',
-      error: ''
-    });
-
-    const formData = new FormData();
-    formData.append('name', mealDetails.name);
-    formData.append('price', mealDetails.price.toString());
-    formData.append('description', mealDetails.description);
-    formData.append('imageUrl', '');
-    formData.append('categoryId', mealDetails.categoryId);
-    formData.append('menuId', selectedRestaurantMenuId || '');
-    formData.append('imageFile', uploadImgInputRef.current?.files?.[0] || '');
-
-    if (
-      !mealDetails.name ||
-      !mealDetails.description ||
-      mealDetails.categoryId === "-1" ||
-      !mealDetails.price ||
-      !uploadImgInputRef.current?.files?.[0]
-    ) {
+    try {
       setMealResponse({
-        ...mealResponse,
-        error: 'Asegurate de que todas las propiedades esten definidas'
+        success: '',
+        error: ''
       });
-      return;
-    }
 
-    setIsLoading({
-      ...isLoading,
-      createMeal: true,
-    });
+      const formData = new FormData();
+      formData.append('name', mealDetails.name);
+      formData.append('price', mealDetails.price.toString());
+      formData.append('description', mealDetails.description);
+      formData.append('imageUrl', '');
+      formData.append('categoryId', mealDetails.categoryId);
+      formData.append('menuId', selectedRestaurantMenuId || '');
+      formData.append('imageFile', uploadImgInputRef.current?.files?.[0] || '');
 
-    const response = await createMeal(formData).unwrap();
+      if (
+        !mealDetails.name ||
+        !mealDetails.description ||
+        mealDetails.categoryId === "-1" ||
+        !mealDetails.price ||
+        !uploadImgInputRef.current?.files?.[0]
+      ) {
+        setMealResponse({
+          success: '',
+          error: 'Asegurate de que todas las propiedades esten definidas'
+        });
+        return;
+      }
 
-    if (response.error || !response.success) {
-      if (response.statusCode === 400) {
+      setIsLoading({
+        ...isLoading,
+        createMeal: true,
+      });
+
+      const response = await createMeal(formData).unwrap();
+
+      if (response.success) {
         setMealResponse({
           ...mealResponse,
-          error: 'Todos los campos son requeridos y la imagen debe ser de tipo: jpeg, png o webp',
+          success: response.message,
+          error: ''
         });
+      }
+
+      setIsLoading({
+        ...isLoading,
+        createMeal: false,
+      });
+
+      setMealDetails({
+        name: '',
+        price: 0,
+        description: '',
+        imageUrl: '',
+        categoryId: '',
+        metadata: {},
+        menuId: ''
+      });
+    } catch (error: any) {
+      console.log(error);
+      if (error.status === 400) {
+        setMealResponse({
+          success: '',
+          error: error.data.message || 'Todos los campos son requeridos y la imagen debe ser de tipo: jpeg, png o webp',
+        });
+        return;
       }
       setMealResponse({
         ...mealResponse,
-        error: response.message,
+        error: error.message,
         success: ''
       });
-    }
-
-    if (response.success) {
-      setMealResponse({
-        ...mealResponse,
-        success: response.message,
-        error: ''
+    } finally {
+      setIsLoading({
+        ...isLoading,
+        createMeal: false,
       });
     }
-
-    setIsLoading({
-      ...isLoading,
-      createMeal: false,
-    });
-
-    setMealDetails({
-      name: '',
-      price: 0,
-      description: '',
-      imageUrl: '',
-      categoryId: '',
-      metadata: {},
-      menuId: ''
-    });
   }
 
   return (
@@ -239,7 +245,6 @@ export default function AddPage() {
                     <SelectValue placeholder="Selecciona una categoría" />
                   </SelectTrigger>
                   <SelectContent>
-                    {/*! TODO: Replace this categories by real categories */}
                     {
                       categories && categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>

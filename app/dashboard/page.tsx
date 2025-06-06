@@ -19,7 +19,8 @@ export default function DashboardPage() {
       dispatch(setSelectedRestaurant({
         id: selectedRestaurant.id,
         name: selectedRestaurant.name,
-        menuId: selectedRestaurant.menu.id
+        menuId: selectedRestaurant.menu.id,
+        hasCompleteOnboarding: selectedRestaurant.onboardingComplete
       }));
     }
   };
