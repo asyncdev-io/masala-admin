@@ -44,6 +44,7 @@ export default function AddPage() {
     createMeal: false,
   });
   const selectedRestaurantMenuId = useSelector((state: RootState) => state.restaurant.selectedRestaurant.menuId);
+  const selectedRestaurantId = useSelector((state: RootState) => state.restaurant.selectedRestaurant.id);
   const [createMenuCategory] = useCreateMenuCategoryMutation();
   const [createMeal] = useCreateMealMutation();
   const { data: categories } = useGetMenuCategoriesQuery(selectedRestaurantMenuId || '');
@@ -132,6 +133,7 @@ export default function AddPage() {
       formData.append('imageUrl', '');
       formData.append('categoryId', mealDetails.categoryId);
       formData.append('menuId', selectedRestaurantMenuId || '');
+      formData.append('restaurantId', selectedRestaurantId || '');
       formData.append('imageFile', uploadImgInputRef.current?.files?.[0] || '');
 
       if (
