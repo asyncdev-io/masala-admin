@@ -5,6 +5,7 @@ interface RestaurantState {
     id: string | null;
     name: string | null;
     menuId: string | null;
+    hasCompleteOnboarding: boolean | null;
   };
 }
 
@@ -12,7 +13,8 @@ const initialState: RestaurantState = {
   selectedRestaurant: {
     id: null,
     name: null,
-    menuId: null
+    menuId: null,
+    hasCompleteOnboarding: null,
   }
 };
 
@@ -20,7 +22,7 @@ const restaurantSlice = createSlice({
   name: 'restaurant',
   initialState,
   reducers: {
-    setSelectedRestaurant: (state, action: PayloadAction<{ id: string | null; name: string | null, menuId: string | null }>) => {
+    setSelectedRestaurant: (state, action: PayloadAction<{ id: string | null; name: string | null, menuId: string | null, hasCompleteOnboarding: boolean | null }>) => {
       state.selectedRestaurant = action.payload;
     },
   },

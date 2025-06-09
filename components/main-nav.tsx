@@ -10,6 +10,7 @@ import {
   PlusCircle,
   ClipboardList,
   Settings,
+  CookingPot
 } from "lucide-react";
 
 const navItems = [
@@ -37,6 +38,11 @@ const navItems = [
     title: "Perfil",
     href: "/dashboard/profile",
     icon: Settings,
+  },
+  {
+    title: "Agregar restaurante",
+    href: "/dashboard/new-restaurant",
+    icon: CookingPot,
   },
 ];
 
