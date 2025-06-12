@@ -7,6 +7,7 @@ import { MenuImportRequest, MenuImportResponse } from "@/types/menu";
 import { CreateMealRequest, CreateMealResponse } from "@/types/meal";
 import { RestaurantCategory } from "@/types/restaurant.category";
 import { Label } from "@/types/label";
+import { NotificationAPI } from "@/types/notification";
 
 interface LoginRequest {
   email: string;
@@ -53,6 +54,12 @@ export const api = createApi({
       }),
       invalidatesTags: ["Auth"],
     }),
+
+    //Notification endpoints
+    getNotificationsByRestaurant: builder.query<NotificationAPI[], string>({
+    query: (restaurantId) => `/restaurants/notifications/${restaurantId}`,
+    }),
+
 
     // Orders endpoints
     getOrders: builder.query<Order[], void>({
@@ -181,5 +188,6 @@ export const {
   useImportMenuMutation,
   useCreateMealMutation,
   useGetRestaurantCategoriesQuery,
-  useGetLabelsQuery
+  useGetLabelsQuery,
+  useGetNotificationsByRestaurantQuery
 } = api;
