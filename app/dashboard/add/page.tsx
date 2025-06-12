@@ -19,6 +19,7 @@ import { RootState } from "@/lib/store/store";
 import Link from "next/link";
 import { CreateMealRequest } from "@/types/meal";
 import Loader from "@/components/ui/loader";
+import { imageCompressor } from "@/lib/utils/image-compressor";
 
 export default function AddPage() {
   const [menuName, setMenuName] = useState('');
@@ -126,6 +127,20 @@ export default function AddPage() {
         error: ''
       });
 
+      if (
+        mealDetails.categoryId === '-1' ||
+        !mealDetails.price ||
+        !mealDetails.name ||
+        !mealDetails.description ||
+        !uploadImgInputRef.current?.files?.[0]
+      ) {
+        setMealResponse({
+          success: '',
+          error: 'Asegurate de que todas las propiedades esten definidas'
+        });
+        return null;
+      }
+
       const formData = new FormData();
       formData.append('name', mealDetails.name);
       formData.append('price', mealDetails.price.toString());
@@ -134,7 +149,15 @@ export default function AddPage() {
       formData.append('categoryId', mealDetails.categoryId);
       formData.append('menuId', selectedRestaurantMenuId || '');
       formData.append('restaurantId', selectedRestaurantId || '');
-      formData.append('imageFile', uploadImgInputRef.current?.files?.[0] || '');
+
+      // Image compression
+      const imageFile = uploadImgInputRef.current.files[0];
+      const imageOptions = {
+        maxWidth: 800,
+        maxHeight: 600
+      }
+      const compressedImage = await imageCompressor(imageFile, imageOptions);
+      formData.append('imageFile', compressedImage);
 
       if (
         !mealDetails.name ||
