@@ -23,45 +23,45 @@ export default function OrdersPage() {
     router.push(`/dashboard/orders/${orderId}`);
   };
 
- const pendingOrders = notifications
-  ?.filter((n) => n.order?.status === "PENDING")
-  .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
-  .map((n, index) => ({
-    id: n.order.id,
-    title: `Orden ${index + 1}`,
-    status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
-    createdAt: n.order.createdAt,
-    total: n.order.total,
-    notes: n.order.notes,
-    items: n.order.items.map((item) => ({
-      id: item.id,
-      name: item.meal.name,
-      price: parseFloat(item.meal.price.toString()),
-      quantity: item.quantity,
-      notes: item.notes,
-    })),
-  }));
+  const getOrderNumber = (n: any) => n.order?.orderNumber ?? n.order?.id;
 
-
+  const pendingOrders = notifications
+    ?.filter((n) => n.order?.status === "PENDING")
+    .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
+    .map((n) => ({
+      id: n.order.id,
+      title: `Orden ${getOrderNumber(n)}`,
+      status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
+      createdAt: n.order.createdAt,
+      total: n.order.total,
+      notes: n.order.notes,
+      items: n.order.items.map((item) => ({
+        id: item.id,
+        name: item.meal.name,
+        price: parseFloat(item.meal.price.toString()),
+        quantity: item.quantity,
+        notes: item.notes,
+      })),
+    }));
 
   const inProgressOrders = notifications
-   ?.filter((n) => n.order?.status === "IN_PROGRESS")
-  .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
-  .map((n, index) => ({
-    id: n.order.id,
-    title: `Orden ${index + 1}`,
-    status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
-    createdAt: n.order.createdAt,
-    total: n.order.total,
-    notes: n.order.notes,
-    items: n.order.items.map((item) => ({
-      id: item.id,
-      name: item.meal.name,
-      price: parseFloat(item.meal.price.toString()),
-      quantity: item.quantity,
-      notes: item.notes,
-    })),
-  }));
+    ?.filter((n) => n.order?.status === "IN_PROGRESS")
+    .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
+    .map((n) => ({
+      id: n.order.id,
+      title: `Orden ${getOrderNumber(n)}`,
+      status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
+      createdAt: n.order.createdAt,
+      total: n.order.total,
+      notes: n.order.notes,
+      items: n.order.items.map((item) => ({
+        id: item.id,
+        name: item.meal.name,
+        price: parseFloat(item.meal.price.toString()),
+        quantity: item.quantity,
+        notes: item.notes,
+      })),
+    }));
 
   return (
     <div className="space-y-6">
