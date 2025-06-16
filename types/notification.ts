@@ -1,4 +1,4 @@
-export interface NotificationAPI {
+export interface NotificationAPI { 
   id: string;
   read: boolean;
   status: "PENDING" | "CONFIRMED" | "CANCELED";
@@ -8,12 +8,11 @@ export interface NotificationAPI {
     status: string;
     createdAt: string;
     total: number;
-    address?: {
-      tableNumber?: number;
-    };
+    notes?: string; 
     items: {
       id: string;
       quantity: number;
+      notes?: string; 
       meal: {
         name: string;
         price: string | number;

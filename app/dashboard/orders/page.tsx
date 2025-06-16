@@ -23,48 +23,45 @@ export default function OrdersPage() {
     router.push(`/dashboard/orders/${orderId}`);
   };
 
-  const pendingOrders = notifications
+ const pendingOrders = notifications
   ?.filter((n) => n.order?.status === "PENDING")
-  .map((n) => ({
+  .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
+  .map((n, index) => ({
     id: n.order.id,
-    table: "Mesa " + (n.order.address?.tableNumber ?? "1"),
+    title: `Orden ${index + 1}`,
     status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
     createdAt: n.order.createdAt,
     total: n.order.total,
-    items: n.order.items.map((item: {
-      id: string;
-      quantity: number;
-      meal: { name: string; price: string | number };
-    }) => ({
+    notes: n.order.notes,
+    items: n.order.items.map((item) => ({
       id: item.id,
       name: item.meal.name,
       price: parseFloat(item.meal.price.toString()),
       quantity: item.quantity,
+      notes: item.notes,
     })),
   }));
+
 
 
   const inProgressOrders = notifications
-  ?.filter((n) => n.order?.status === "IN_PROGRESS")
-  .map((n) => ({
+   ?.filter((n) => n.order?.status === "IN_PROGRESS")
+  .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
+  .map((n, index) => ({
     id: n.order.id,
-    table: "Mesa " + (n.order.address?.tableNumber ?? "1"),
+    title: `Orden ${index + 1}`,
     status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
     createdAt: n.order.createdAt,
     total: n.order.total,
-    items: n.order.items.map((item: {
-      id: string;
-      quantity: number;
-      meal: { name: string; price: string | number };
-    }) => ({
+    notes: n.order.notes,
+    items: n.order.items.map((item) => ({
       id: item.id,
       name: item.meal.name,
       price: parseFloat(item.meal.price.toString()),
       quantity: item.quantity,
+      notes: item.notes,
     })),
   }));
-
-
 
   return (
     <div className="space-y-6">
@@ -93,7 +90,7 @@ export default function OrdersPage() {
         {/* In Progress Orders */}
         <Card>
           <CardHeader>
-            <CardTitle>En Progreso</CardTitle>
+            <CardTitle>En progreso</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (

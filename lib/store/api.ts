@@ -55,12 +55,6 @@ export const api = createApi({
       invalidatesTags: ["Auth"],
     }),
 
-    //Notification endpoints
-    getNotificationsByRestaurant: builder.query<NotificationAPI[], string>({
-    query: (restaurantId) => `/restaurants/notifications/${restaurantId}`,
-    }),
-
-
     // Orders endpoints
     getOrders: builder.query<Order[], void>({
       query: () => "/orders",
@@ -170,6 +164,10 @@ export const api = createApi({
     // Labels endpoints
     getLabels: builder.query<Label[], void>({
       query: () => `/labels`
+    }),
+    //Notification endpoints
+    getNotificationsByRestaurant: builder.query<NotificationAPI[], string>({
+    query: (restaurantId) => `/restaurants/notifications/${restaurantId}`,
     })
   }),
 });

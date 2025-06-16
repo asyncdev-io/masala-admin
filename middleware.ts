@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const session = request.cookies.get('session');
+  // Cambiado para leer la cookie 'masala-admin-token' en vez de 'session'
+  const session = request.cookies.get('masala-admin-token');
   const isAuthPage = request.nextUrl.pathname === '/login';
 
   if (!session && !isAuthPage) {
@@ -17,5 +18,8 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    // Excluye rutas de API, archivos estáticos, imágenes, favicon y login
+    '/((?!api|_next/static|_next/image|favicon.ico|login).*)',
+  ],
 };
