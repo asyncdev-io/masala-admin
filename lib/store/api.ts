@@ -143,7 +143,8 @@ export const api = createApi({
         url: "/menus/restaurant/import",
         method: "POST",
         body: data
-      })
+      }),
+      invalidatesTags: ["MenuCategories"]
     }),
 
     // Meals endpoints

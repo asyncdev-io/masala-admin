@@ -26,6 +26,7 @@ export interface CreateRestaurantResponse {
   restaurant: Restaurant;
   stripeOnboardingUrl: string;
   restaurantId: string;
+  warnings: string[];
 }
 
 export interface Restaurant extends RestaurantRequest {
