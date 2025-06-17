@@ -155,6 +155,18 @@ export const api = createApi({
       })
     }),
 
+    updateMeal: builder.mutation<CreateMealResponse, { id: string; data: FormData; }>({
+      query: ({id, data}) => ({
+        url: `/meals/${id}`,
+        method: "PATCH",
+        body: data
+      })
+    }),
+
+    getMealById: builder.query<CreateMealResponse, string>({
+      query: (id) => `/meals/${id}`
+    }),
+
     // Restaurants categories endpoint
     getRestaurantCategories: builder.query<RestaurantCategory[], void>({
       query: () => `/categories`
@@ -168,18 +180,28 @@ export const api = createApi({
 });
 
 export const {
+  // Auth endpoints
   useLoginMutation,
+  // Orders endpoints
   useGetOrdersQuery,
   useGetOrderQuery,
   useUpdateOrderStatusMutation,
+  // Restaurants endpoints
   useGetMyRestaurantsQuery,
   useCreateRestaurantMutation,
   useCompleteRestaurantOnboardingMutation,
   useReauthOnboardingQuery,
+  // Menu categories endpoint
   useCreateMenuCategoryMutation,
   useGetMenuCategoriesQuery,
+  // Menu endpoint
   useImportMenuMutation,
+  // Meals endpoints
   useCreateMealMutation,
+  useUpdateMealMutation,
+  useGetMealByIdQuery,
+  // Restaurants categories endpoint
   useGetRestaurantCategoriesQuery,
+  // Labels endpoints
   useGetLabelsQuery
 } = api;
