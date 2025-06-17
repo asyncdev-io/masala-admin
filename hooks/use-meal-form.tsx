@@ -3,33 +3,22 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
 import { useCreateMealMutation, useUpdateMealMutation } from "@/lib/store/api";
 import { imageCompressor } from "@/lib/utils/image-compressor";
-
-// Definir un tipo para el estado local del formulario de platillos
-interface MealFormState {
-  name: string;
-  price: number;
-  description: string;
-  imageUrl: string;
-  categoryId: string;
-  metadata: {};
-  menuId: string;
-  imageFile?: File | null; // Para el archivo de imagen a subir
-}
+import { MealFormState } from "@/types/meal";
 
 interface UseMealFormProps {
-  mealId?: string; // Si se proporciona, estamos en modo edición
+  mealId?: string | null; // Si se proporciona, estamos en modo edición
   initialData?: MealFormState; // Datos iniciales del platillo para edición
 }
 
 export const useMealForm = ({ mealId, initialData }: UseMealFormProps) => {
   const isEditMode = !!mealId;
 
-  const [mealDetails, setMealDetails] = useState<MealFormState>(initialData || {
+  const [mealDetails, setMealDetails] = useState<Omit<MealFormState, 'id'>>(initialData || {
     name: '',
     price: 0,
     description: '',
     imageUrl: '',
-    categoryId: '',
+    category: { id: '', name: '', menu: null },
     metadata: {},
     menuId: '',
     imageFile: null,
@@ -86,7 +75,7 @@ export const useMealForm = ({ mealId, initialData }: UseMealFormProps) => {
       !mealDetails.name ||
       !mealDetails.description ||
       !mealDetails.price || mealDetails.price <= 0 ||
-      mealDetails.categoryId === '-1' || mealDetails.categoryId === '-2' || !mealDetails.categoryId
+      mealDetails.category.id === '-1' || mealDetails.category.id === '-2' || !mealDetails.category.id
     ) {
       setMealResponse({ success: '', error: 'Asegúrate de que el nombre, la descripción, el precio y la categoría estén definidos.' });
       return false;
@@ -110,13 +99,13 @@ export const useMealForm = ({ mealId, initialData }: UseMealFormProps) => {
     setIsLoading({ ...isLoading, [isEditMode ? 'updateMeal' : 'createMeal']: true });
 
     const formData = new FormData();
-    formData.append('name', mealDetails.name);
-    formData.append('price', mealDetails.price.toString());
-    formData.append('description', mealDetails.description);
-    formData.append('categoryId', mealDetails.categoryId);
+    formData.append('name', mealDetails.name.trim());
+    formData.append('price', mealDetails.price.toString().trim());
+    formData.append('description', mealDetails.description.trim());
+    formData.append('categoryId', mealDetails.category.id);
     formData.append('menuId', selectedRestaurantMenuId || '');
     formData.append('restaurantId', selectedRestaurantId || '');
-    formData.append('imageUrl', mealDetails.imageUrl);
+    formData.append('imageUrl', mealDetails.imageUrl.trim());
 
     // Compresion de la imagen
     if (uploadImgInputRef.current?.files?.[0]) {
@@ -142,7 +131,7 @@ export const useMealForm = ({ mealId, initialData }: UseMealFormProps) => {
         // Resetear solo si es creación
         if (!isEditMode) {
           setMealDetails({
-            name: '', price: 0, description: '', imageUrl: '', categoryId: '', metadata: {}, menuId: '', imageFile: null
+            name: '', price: 0, description: '', imageUrl: '', category: { id: '', name: '', menu: null }, metadata: {}, menuId: '', imageFile: null
           });
           if (uploadImgInputRef.current) uploadImgInputRef.current.value = ''; // Limpiar input de archivo
         }

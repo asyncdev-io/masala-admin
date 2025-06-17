@@ -4,9 +4,10 @@ import { CreateRestaurantRequest, CreateRestaurantResponse, Restaurant, Restaura
 import Cookie from "js-cookie"
 import { Category } from "@/types/category";
 import { MenuImportRequest, MenuImportResponse } from "@/types/menu";
-import { CreateMealRequest, CreateMealResponse } from "@/types/meal";
+import { CreateMealRequest, CreateMealResponse, Meal } from "@/types/meal";
 import { RestaurantCategory } from "@/types/restaurant.category";
 import { Label } from "@/types/label";
+import { CategoryMeals } from "@/types/category.meals";
 
 interface LoginRequest {
   email: string;
@@ -42,7 +43,7 @@ export const api = createApi({
       return headers;
     }
   }),
-  tagTypes: ["Orders", "Auth", "Restaurants", "MenuCategories"],
+  tagTypes: ["Orders", "Auth", "Restaurants", "MenuCategories", "Meals"],
   endpoints: (builder) => ({
     // Auth endpoints
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -152,7 +153,8 @@ export const api = createApi({
         url: "/meals",
         method: "POST",
         body: data
-      })
+      }),
+      invalidatesTags: ["Meals"]
     }),
 
     updateMeal: builder.mutation<CreateMealResponse, { id: string; data: FormData; }>({
@@ -160,11 +162,20 @@ export const api = createApi({
         url: `/meals/${id}`,
         method: "PATCH",
         body: data
-      })
+      }),
+      invalidatesTags: ["Meals"]
     }),
 
-    getMealById: builder.query<CreateMealResponse, string>({
-      query: (id) => `/meals/${id}`
+    getMealById: builder.query<Meal, string>({
+      query: (id) => `/meals/${id}`,
+      providesTags: ["Meals"]
+    }),
+
+    getMealsByRestaurant: builder.query<CategoryMeals[], string>({
+      query: (restaurantId) => ({
+        url: `/meals/restaurant/${restaurantId}`
+      }),
+      providesTags: ["Meals"]
     }),
 
     // Restaurants categories endpoint
@@ -200,6 +211,7 @@ export const {
   useCreateMealMutation,
   useUpdateMealMutation,
   useGetMealByIdQuery,
+  useGetMealsByRestaurantQuery,
   // Restaurants categories endpoint
   useGetRestaurantCategoriesQuery,
   // Labels endpoints

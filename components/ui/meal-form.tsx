@@ -19,7 +19,7 @@ import { RootState } from "@/lib/store/store";
 import { useMealForm } from "@/hooks/use-meal-form";
 
 interface MealFormProps {
-  mealId?: string; // Opcional, si estamos editando
+  mealId?: string | null; // Opcional, si estamos editando
   initialData?: any; // Datos iniciales del platillo para edición
 }
 
@@ -67,8 +67,8 @@ export default function MealForm({ mealId, initialData }: MealFormProps) {
           <div className="space-y-2">
             <Label htmlFor="category">Categoría</Label>
             <Select
-              value={mealDetails.categoryId}
-              onValueChange={(value) => setMealDetails({ ...mealDetails, categoryId: value })}
+              value={mealDetails.category.id}
+              onValueChange={(value) => setMealDetails({ ...mealDetails, category: { id: value, name: '', menu: null } })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona una categoría" />
@@ -95,6 +95,9 @@ export default function MealForm({ mealId, initialData }: MealFormProps) {
               data-menu-detail-field="price"
               onChange={handleMealDetilChange}
             />
+            <p className="text-sm text-gray-500">
+              Nota: Este es el precio que usted recibirá por cada platillo vendido pero la plataforma aplicará comisiones y por ello este precio subirá al cliente final.
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="dish-image">Imagen</Label>

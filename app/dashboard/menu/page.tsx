@@ -9,50 +9,38 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useGetMealsByRestaurantQuery } from "@/lib/store/api";
 import { RootState } from "@/lib/store/store";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-
-const menuItems = [
-  {
-    id: 1,
-    name: "Classic Burger",
-    description: "Beef patty with lettuce, tomato, and special sauce",
-    price: "$12.99",
-    category: "Main Course",
-  },
-  {
-    id: 2,
-    name: "Caesar Salad",
-    description: "Fresh romaine lettuce with parmesan and croutons",
-    price: "$8.99",
-    category: "Starters",
-  },
-];
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function MenuPage() {
   const selectedRestaurantMenuId = useSelector((state: RootState) => state.restaurant.selectedRestaurant.menuId);
+  const selectedRestaurantId = useSelector((state: RootState) => state.restaurant.selectedRestaurant.id);
+  const { data: categoryMeals } = useGetMealsByRestaurantQuery(selectedRestaurantId as string);
+  console.log(categoryMeals);
   const [showModalMenuImport, setShowModalMenuImport] = useState(false);
 
   return (
     <div className="space-y-6">
       {
-        showModalMenuImport && <ModalImportMenu showModalMenuImport={setShowModalMenuImport}/>
+        showModalMenuImport && <ModalImportMenu showModalMenuImport={setShowModalMenuImport} />
       }
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Menu Items</h1>
         <Button asChild>
           {
             selectedRestaurantMenuId ?
-            <button onClick={() => setShowModalMenuImport(true)}>
-              Importe un menu de otro restaurante
-            </button>
-            :
-            <Link href={'/dashboard'}>
-              Defina el resutarante que quiere administrar para importar un menu
-            </Link>
+              <button onClick={() => setShowModalMenuImport(true)}>
+                Importe un menu de otro restaurante
+              </button>
+              :
+              <Link href={'/dashboard'}>
+                Defina el resutarante que quiere administrar para importar un menu
+              </Link>
           }
         </Button>
         <Button asChild>
@@ -63,7 +51,65 @@ export default function MenuPage() {
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-4">
-        {menuItems.map((item) => (
+        {/* Travel through categories */}
+        {
+          categoryMeals && categoryMeals.map((item) => (
+            <Accordion type="single" collapsible key={item.categoryName}>
+              <AccordionItem value={item.categoryName}>
+                <AccordionTrigger>{item.categoryName}</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4">
+                    {item.meals.map((meal) => (
+                      <Card key={meal.id}>
+                        <CardHeader>
+                          <CardTitle>{meal.name}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            {meal.description}
+                          </p>
+                          <p className="font-bold">{meal.price}</p>
+                          <Button>
+                            <Link href={`/dashboard/add?mealId=${meal.id}`}>Editar producto</Link>
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          ))
+        }
+        {
+          !selectedRestaurantId && (
+            <Card>
+              <CardHeader>
+                <CardTitle>No ha seleccionado un restaurante</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Seleccione un restaurante para ver sus platillos
+                </p>
+              </CardContent>
+            </Card>
+          )
+        }
+        {
+          (selectedRestaurantId && !categoryMeals || categoryMeals?.length === 0) && (
+            <Card>
+              <CardHeader>
+                <CardTitle>No hay platillos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Aun no has agregado platillos a tu menu
+                </p>
+              </CardContent>
+            </Card>
+          )
+        }
+        {/* {categoryMeals && categoryMeals.map((item) => (
           <Card key={item.id}>
             <CardHeader>
               <CardTitle>{item.name}</CardTitle>
@@ -76,7 +122,7 @@ export default function MenuPage() {
               <p className="font-bold">{item.price}</p>
             </CardContent>
           </Card>
-        ))}
+        ))} */}
       </div>
     </div>
   );
