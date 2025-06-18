@@ -1,11 +1,18 @@
+import { Category } from "./category";
+
 export interface Meal {
   id: string;
   name: string;
   description: string;
   price: number;
-  imageFile: File;
+  imageFile?: File | null;
   imageUrl: string;
-  category: string;
+  category: Category;
+}
+
+export interface MealFormState extends Meal  {
+  metadata: {};
+  menuId: string;
 }
 
 export interface CreateMealRequest {
