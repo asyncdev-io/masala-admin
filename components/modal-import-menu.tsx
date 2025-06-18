@@ -3,20 +3,23 @@ import { RootState } from '@/lib/store/store';
 import React, { useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { CircleX } from 'lucide-react';
+import Loader from './ui/loader';
 
+// TODO: Add a loader while importing menu
 export default function ModalImportMenu({ showModalMenuImport }: { showModalMenuImport: Function }) {
 
+  const [isLoading, setIsLoading] = useState(false);
   const sourceMenuIdRef = useRef('');
   const { data: restaurants } = useGetMyRestaurantsQuery();
   const { menuId: targetMenuId, name } = useSelector((state: RootState) => state.restaurant.selectedRestaurant);
-  const [ importMenu ] = useImportMenuMutation();
-  const [ userFeedbackMessages, setUserFeedbackMessages ] = useState({
+  const [importMenu] = useImportMenuMutation();
+  const [userFeedbackMessages, setUserFeedbackMessages] = useState({
     error: '',
     success: ''
   });
 
   async function handleImportMenu() {
-    if(!sourceMenuIdRef.current) {
+    if (!sourceMenuIdRef.current) {
       setUserFeedbackMessages({
         success: '',
         error: 'Selecciona un restaurante primero'
@@ -24,7 +27,7 @@ export default function ModalImportMenu({ showModalMenuImport }: { showModalMenu
       return;
     }
 
-    if(!targetMenuId) {
+    if (!targetMenuId) {
       setUserFeedbackMessages({
         success: '',
         error: 'Selecciona un restaurante primero'
@@ -32,21 +35,31 @@ export default function ModalImportMenu({ showModalMenuImport }: { showModalMenu
       return;
     }
 
-    const response = await importMenu({
-      sourceMenuId: sourceMenuIdRef.current,
-      targetMenuId: targetMenuId
-    }).unwrap();
+    setIsLoading(true);
+    try {
+      const response = await importMenu({
+        sourceMenuId: sourceMenuIdRef.current,
+        targetMenuId: targetMenuId
+      }).unwrap();
 
-    if(response.success) {
-      setUserFeedbackMessages({
-        success: 'Menu importado correctamente',
-        error: ''
-      })
-    } else {
+      if (response.success) {
+        setUserFeedbackMessages({
+          success: 'Menu importado correctamente',
+          error: ''
+        })
+      } else {
+        setUserFeedbackMessages({
+          success: '',
+          error: 'Hubo un error al importar el menu'
+        })
+      }
+    } catch (error) {
       setUserFeedbackMessages({
         success: '',
         error: 'Hubo un error al importar el menu'
-      })
+      });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -87,8 +100,15 @@ export default function ModalImportMenu({ showModalMenuImport }: { showModalMenu
 
           <button
             onClick={handleImportMenu}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-            Importar Menu
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader size="sm" />
+                <span className="ml-2">Importando menus...</span>
+              </>
+            ) : (
+              "Crear Restaurante"
+            )}
           </button>
 
           {

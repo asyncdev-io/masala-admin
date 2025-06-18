@@ -16,7 +16,7 @@ import Loader from "@/components/ui/loader";
 import { imageCompressor } from "@/lib/utils/image-compressor";
 
 export default function NewRestaurantPage() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [createRestaurant] = useCreateRestaurantMutation();
@@ -96,6 +96,7 @@ export default function NewRestaurantPage() {
       console.log(response);
 
       if (response.stripeOnboardingUrl) {
+        setCreateRestaurantResponse(response);
         toast({
           title: "Restaurante creado",
           description: "El restaurante se ha creado exitosamente.",
@@ -236,6 +237,11 @@ export default function NewRestaurantPage() {
                 "Crear Restaurante"
               )}
             </Button>
+            {
+              createRestaurantResponse?.warnings?.map((warning) => (
+                <p key={warning} className="text-yellow-500 mt-2">{warning}</p>
+              ))
+            }
           </form>
         </CardContent>
       </Card>
