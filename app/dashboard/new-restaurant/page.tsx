@@ -13,9 +13,10 @@ import { useCreateRestaurantMutation, useGetLabelsQuery, useGetRestaurantCategor
 import { CreateRestaurantRequest, CreateRestaurantResponse } from "@/types/restaurant";
 import { useToast } from "@/hooks/use-toast";
 import Loader from "@/components/ui/loader";
+import { imageCompressor } from "@/lib/utils/image-compressor";
 
 export default function NewRestaurantPage() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [createRestaurant] = useCreateRestaurantMutation();
@@ -78,13 +79,24 @@ export default function NewRestaurantPage() {
     formData.append('categoryId', restaurantDetails.categoryId);
     formData.append('email', restaurantDetails.email);
     formData.append('labelIds', JSON.stringify(selectedLabels));
-    formData.append('restaurantImage', uploadImgInputRef.current?.files?.[0] || '');
+
+    // Image compression
+    if (uploadImgInputRef.current?.files?.[0]) {
+      const imageFile = uploadImgInputRef.current.files[0];
+      const imageOptions = {
+        maxWidth: 800,
+        maxHeight: 600
+      }
+      const compressedImage = await imageCompressor(imageFile, imageOptions);
+      formData.append('restaurantImage', compressedImage);
+    }
 
     try {
       const response = await createRestaurant(formData).unwrap();
       console.log(response);
 
       if (response.stripeOnboardingUrl) {
+        setCreateRestaurantResponse(response);
         toast({
           title: "Restaurante creado",
           description: "El restaurante se ha creado exitosamente.",
@@ -225,6 +237,11 @@ export default function NewRestaurantPage() {
                 "Crear Restaurante"
               )}
             </Button>
+            {
+              createRestaurantResponse?.warnings?.map((warning) => (
+                <p key={warning} className="text-yellow-500 mt-2">{warning}</p>
+              ))
+            }
           </form>
         </CardContent>
       </Card>
