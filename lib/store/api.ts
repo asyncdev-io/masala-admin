@@ -4,9 +4,10 @@ import { CreateRestaurantRequest, CreateRestaurantResponse, Restaurant, Restaura
 import Cookie from "js-cookie"
 import { Category } from "@/types/category";
 import { MenuImportRequest, MenuImportResponse } from "@/types/menu";
-import { CreateMealRequest, CreateMealResponse } from "@/types/meal";
+import { CreateMealRequest, CreateMealResponse, Meal } from "@/types/meal";
 import { RestaurantCategory } from "@/types/restaurant.category";
 import { Label } from "@/types/label";
+import { CategoryMeals } from "@/types/category.meals";
 import { NotificationAPI } from "@/types/notification";
 
 interface LoginRequest {
@@ -43,7 +44,7 @@ export const api = createApi({
       return headers;
     }
   }),
-  tagTypes: ["Orders", "Auth", "Restaurants", "MenuCategories"],
+  tagTypes: ["Orders", "Auth", "Restaurants", "MenuCategories", "Meals"],
   endpoints: (builder) => ({
     // Auth endpoints
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -144,7 +145,8 @@ export const api = createApi({
         url: "/menus/restaurant/import",
         method: "POST",
         body: data
-      })
+      }),
+      invalidatesTags: ["MenuCategories"]
     }),
 
     // Meals endpoints
@@ -153,7 +155,29 @@ export const api = createApi({
         url: "/meals",
         method: "POST",
         body: data
-      })
+      }),
+      invalidatesTags: ["Meals"]
+    }),
+
+    updateMeal: builder.mutation<CreateMealResponse, { id: string; data: FormData; }>({
+      query: ({id, data}) => ({
+        url: `/meals/${id}`,
+        method: "PATCH",
+        body: data
+      }),
+      invalidatesTags: ["Meals"]
+    }),
+
+    getMealById: builder.query<Meal, string>({
+      query: (id) => `/meals/${id}`,
+      providesTags: ["Meals"]
+    }),
+
+    getMealsByRestaurant: builder.query<CategoryMeals[], string>({
+      query: (restaurantId) => ({
+        url: `/meals/restaurant/${restaurantId}`
+      }),
+      providesTags: ["Meals"]
     }),
 
     // Restaurants categories endpoint
@@ -173,19 +197,30 @@ export const api = createApi({
 });
 
 export const {
+  // Auth endpoints
   useLoginMutation,
+  // Orders endpoints
   useGetOrdersQuery,
   useGetOrderQuery,
   useUpdateOrderStatusMutation,
+  // Restaurants endpoints
   useGetMyRestaurantsQuery,
   useCreateRestaurantMutation,
   useCompleteRestaurantOnboardingMutation,
   useReauthOnboardingQuery,
+  // Menu categories endpoint
   useCreateMenuCategoryMutation,
   useGetMenuCategoriesQuery,
+  // Menu endpoint
   useImportMenuMutation,
+  // Meals endpoints
   useCreateMealMutation,
+  useUpdateMealMutation,
+  useGetMealByIdQuery,
+  useGetMealsByRestaurantQuery,
+  // Restaurants categories endpoint
   useGetRestaurantCategoriesQuery,
+  // Labels endpoints
   useGetLabelsQuery,
   useGetNotificationsByRestaurantQuery
 } = api;
