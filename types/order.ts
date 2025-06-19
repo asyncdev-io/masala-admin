@@ -4,11 +4,21 @@ export interface OrderItem {
   quantity: number;
   price: number;
   notes?: string;
+  meal?: {
+    id: string;
+    name: string;
+    description: string;
+    price: string;
+    imageUrl: string;
+    productId: string;
+    priceId: string;
+    finalCustomerPrice: string;
+  };
 }
 
 export interface Order {
   id: string;
-  table: string;
+  title: string;
   status: 'pending' | 'in_progress' | 'completed';
   items: OrderItem[];
   total: number;

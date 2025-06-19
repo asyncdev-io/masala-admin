@@ -13,7 +13,7 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
       onClick={() => onClick(order.id)}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="font-semibold">{order.table}</span>
+        <span className="font-semibold">{order.title}</span>
         <span className="text-sm text-muted-foreground">
           {formatRelativeTime(order.createdAt)}
         </span>
