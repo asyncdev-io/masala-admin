@@ -192,7 +192,23 @@ export const api = createApi({
     //Notification endpoints
     getNotificationsByRestaurant: builder.query<NotificationAPI[], string>({
     query: (restaurantId) => `/restaurants/notifications/${restaurantId}`,
-    })
+    }),
+    // Confirm and Cancel the order
+  confirmOrder: builder.mutation<any, string>({
+  query: (notificationId) => ({
+    url: `/restaurants/notifications/${notificationId}/confirm`,
+    method: "POST",
+  }),
+  invalidatesTags: ["Orders", "Auth"],
+}),
+cancelOrder: builder.mutation<any, string>({
+  query: (notificationId) => ({
+    url: `/restaurants/notifications/${notificationId}/cancel`,
+    method: "POST",
+  }),
+  invalidatesTags: ["Orders", "Auth"],
+  }),
+
   }),
 });
 
@@ -222,5 +238,9 @@ export const {
   useGetRestaurantCategoriesQuery,
   // Labels endpoints
   useGetLabelsQuery,
-  useGetNotificationsByRestaurantQuery
+  // Notification endpoints
+  useGetNotificationsByRestaurantQuery,
+  // Confirm and Cancel the order
+  useConfirmOrderMutation,
+  useCancelOrderMutation,
 } = api;

@@ -19,8 +19,8 @@ export default function OrdersPage() {
     skip: !selectedRestaurantId,
   });
 
-  const handleOrderClick = (orderId: string) => {
-    router.push(`/dashboard/orders/${orderId}`);
+  const handleOrderClick = (orderId: string, notificationId: string) => {
+    router.push(`/dashboard/orders/${orderId}?notificationId=${notificationId}`);
   };
 
   const getOrderNumber = (n: any) => n.order?.orderNumber ?? n.order?.id;
@@ -30,6 +30,7 @@ export default function OrdersPage() {
     .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
     .map((n) => ({
       id: n.order.id,
+      notificationId: n.id, 
       title: `Orden ${getOrderNumber(n)}`,
       status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
       createdAt: n.order.createdAt,
@@ -49,6 +50,7 @@ export default function OrdersPage() {
     .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
     .map((n) => ({
       id: n.order.id,
+      notificationId: n.id, 
       title: `Orden ${getOrderNumber(n)}`,
       status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
       createdAt: n.order.createdAt,
@@ -77,6 +79,8 @@ export default function OrdersPage() {
               <p>Cargando...</p>
             ) : isError ? (
               <p>Error al cargar órdenes</p>
+            ) : pendingOrders && pendingOrders.length === 0 ? (
+              <p>No hay órdenes para mostrar</p>
             ) : (
               <div className="space-y-4">
                 {pendingOrders?.map((order) => (
@@ -90,13 +94,15 @@ export default function OrdersPage() {
         {/* In Progress Orders */}
         <Card>
           <CardHeader>
-            <CardTitle>En progreso</CardTitle>
+            <CardTitle>Órdenes en progreso</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <p>Cargando...</p>
             ) : isError ? (
               <p>Error al cargar órdenes</p>
+            ) : inProgressOrders && inProgressOrders.length === 0 ? (
+              <p>No hay órdenes para mostrar</p>
             ) : (
               <div className="space-y-4">
                 {inProgressOrders?.map((order) => (

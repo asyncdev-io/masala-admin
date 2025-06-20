@@ -1,18 +1,41 @@
 import { OrderItem, type Order } from "@/types/order";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useConfirmOrderMutation, useCancelOrderMutation } from "@/lib/store/api";
 
 interface OrderDetailsProps {
   order: Order;
+  notificationId: string;
 }
 
-export function OrderDetails({ order }: OrderDetailsProps) {
+export function OrderDetails({ order, notificationId }: OrderDetailsProps) {
   console.log("Order Details:", order);
   
   const statusColors = {
     pending: "bg-yellow-100 text-yellow-800",
     in_progress: "bg-blue-100 text-blue-800",
     completed: "bg-green-100 text-green-800"
+  };
+
+  const [confirmOrder, { isLoading: isConfirming }] = useConfirmOrderMutation();
+  const [cancelOrder, { isLoading: isCancelling }] = useCancelOrderMutation();
+
+  const handleConfirm = async () => {
+    try {
+      await confirmOrder(notificationId).unwrap();
+      // Opcional: mostrar toast o refrescar datos
+    } catch (e) {
+      // Manejo de error opcional
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      await cancelOrder(notificationId).unwrap();
+      // Opcional: mostrar toast o refrescar datos
+    } catch (e) {
+      // Manejo de error opcional
+    }
   };
 
   return (
@@ -67,6 +90,24 @@ export function OrderDetails({ order }: OrderDetailsProps) {
             <p className="text-muted-foreground">{order.notes}</p>
           </div>
         )}
+
+        {/* Action Buttons */}
+        <div className="flex gap-4 mt-4">
+          <button
+            className="bg-green-600 text-white px-4 py-2 rounded"
+            onClick={handleConfirm}
+            disabled={isConfirming}
+          >
+            Confirmar orden
+          </button>
+          <button
+            className="bg-red-600 text-white px-4 py-2 rounded"
+            onClick={handleCancel}
+            disabled={isCancelling}
+          >
+            Cancelar orden
+          </button>
+        </div>
       </CardContent>
     </Card>
   );
