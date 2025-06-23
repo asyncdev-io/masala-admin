@@ -25,6 +25,9 @@ export default function LoginPage() {
 
       if (result.success) {
         Cookie.set("masala-admin-token", result.token);
+        Cookie.set("masala-admin-email", result.user.email);
+        Cookie.set("masala-admin-name", `${result.user.names} ${result.user.lastNameMaternal} ${result.user.lastNamePaternal}`);
+        Cookie.set("masala-admin-role", result.user.role);
         router.push("/dashboard");
         router.refresh();
       } else {

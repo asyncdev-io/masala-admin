@@ -18,6 +18,13 @@ interface LoginResponse {
   success: boolean;
   error?: string;
   token: string;
+  user: {
+    role: string;
+    email: string;
+    names: string;
+    lastNameMaternal: string;
+    lastNamePaternal: string;
+  };
 }
 
 interface MenuCategoryRequest {
