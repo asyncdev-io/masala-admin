@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ChefHat } from "lucide-react";
 import { useLoginMutation } from "@/lib/store/api";
 import Cookie from "js-cookie";
+import { Role } from "@/types/roles";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -28,7 +29,11 @@ export default function LoginPage() {
         Cookie.set("masala-admin-email", result.user.email);
         Cookie.set("masala-admin-name", `${result.user.names} ${result.user.lastNameMaternal} ${result.user.lastNamePaternal}`);
         Cookie.set("masala-admin-role", result.user.role);
-        router.push("/dashboard");
+        if(result.user.role === Role.ADMIN) {
+          router.push("/dashboard");
+        } else if(result.user.role === Role.MANAGER) {
+          router.push("/manager");
+        }
         router.refresh();
       } else {
         toast({
