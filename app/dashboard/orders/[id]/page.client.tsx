@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock } from "lucide-react";
 import { OrderDetails } from "@/components/orders/order-details";
-import { getOrder } from "@/data/orders";
 import { formatRelativeTime } from "@/lib/utils/date";
+import { useGetOrderQuery } from "@/lib/store/api"; 
 
 interface OrderPageClientProps {
   params: {
@@ -15,16 +15,22 @@ interface OrderPageClientProps {
 
 export function OrderPageClient({ params }: OrderPageClientProps) {
   const router = useRouter();
-  const order = getOrder(params.id);
+  const searchParams = useSearchParams();
+  const notificationId = searchParams.get("notificationId") || "";
+  const { data: order, isLoading, isError } = useGetOrderQuery(params.id); 
 
-  if (!order) {
+  if (isLoading) {
+    return <p>Cargando orden...</p>;
+  }
+
+  if (isError || !order) {
     return (
       <div className="space-y-6">
         <Button variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Orders
+          Volver a órdenes
         </Button>
-        <p>Order not found</p>
+        <p>No se encontró la orden</p>
       </div>
     );
   }
@@ -34,15 +40,15 @@ export function OrderPageClient({ params }: OrderPageClientProps) {
       <div className="flex items-center gap-4">
         <Button variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Orders
+          Volver a órdenes
         </Button>
         <div className="flex items-center gap-2 text-muted-foreground">
           <Clock className="h-4 w-4" />
           <span>{formatRelativeTime(order.createdAt)}</span>
         </div>
       </div>
-      
-      <OrderDetails order={order} />
+
+      <OrderDetails order={order} notificationId={notificationId} />
     </div>
   );
 }
