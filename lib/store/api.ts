@@ -7,8 +7,8 @@ import { MenuImportRequest, MenuImportResponse } from "@/types/menu";
 import { CreateMealRequest, CreateMealResponse, Meal } from "@/types/meal";
 import { RestaurantCategory } from "@/types/restaurant.category";
 import { Label } from "@/types/label";
-import { CategoryMeals } from "@/types/category.meals";
 import { NotificationAPI } from "@/types/notification";
+import { CategoryMeals } from "@/types/category.meals";
 
 interface LoginRequest {
   email: string;
@@ -192,7 +192,23 @@ export const api = createApi({
     //Notification endpoints
     getNotificationsByRestaurant: builder.query<NotificationAPI[], string>({
     query: (restaurantId) => `/restaurants/notifications/${restaurantId}`,
-    })
+    }),
+    // Confirm and Cancel the order
+  confirmOrder: builder.mutation<any, string>({
+  query: (notificationId) => ({
+    url: `/restaurants/notifications/${notificationId}/confirm`,
+    method: "POST",
+  }),
+  invalidatesTags: ["Orders", "Auth"],
+}),
+cancelOrder: builder.mutation<any, string>({
+  query: (notificationId) => ({
+    url: `/restaurants/notifications/${notificationId}/cancel`,
+    method: "POST",
+  }),
+  invalidatesTags: ["Orders", "Auth"],
+  }),
+
   }),
 });
 
@@ -222,5 +238,9 @@ export const {
   useGetRestaurantCategoriesQuery,
   // Labels endpoints
   useGetLabelsQuery,
-  useGetNotificationsByRestaurantQuery
+  // Notification endpoints
+  useGetNotificationsByRestaurantQuery,
+  // Confirm and Cancel the order
+  useConfirmOrderMutation,
+  useCancelOrderMutation,
 } = api;

@@ -19,49 +19,51 @@ export default function OrdersPage() {
     skip: !selectedRestaurantId,
   });
 
-  const handleOrderClick = (orderId: string) => {
-    router.push(`/dashboard/orders/${orderId}`);
+  const handleOrderClick = (orderId: string, notificationId: string) => {
+    router.push(`/dashboard/orders/${orderId}?notificationId=${notificationId}`);
   };
 
- const pendingOrders = notifications
-  ?.filter((n) => n.order?.status === "PENDING")
-  .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
-  .map((n, index) => ({
-    id: n.order.id,
-    title: `Orden ${index + 1}`,
-    status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
-    createdAt: n.order.createdAt,
-    total: n.order.total,
-    notes: n.order.notes,
-    items: n.order.items.map((item) => ({
-      id: item.id,
-      name: item.meal.name,
-      price: parseFloat(item.meal.price.toString()),
-      quantity: item.quantity,
-      notes: item.notes,
-    })),
-  }));
+  const getOrderNumber = (n: any) => n.order?.orderNumber ?? n.order?.id;
 
-
+  const pendingOrders = notifications
+    ?.filter((n) => n.order?.status === "PENDING")
+    .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
+    .map((n) => ({
+      id: n.order.id,
+      notificationId: n.id, 
+      title: `Orden ${getOrderNumber(n)}`,
+      status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
+      createdAt: n.order.createdAt,
+      total: n.order.total,
+      notes: n.order.notes,
+      items: n.order.items.map((item) => ({
+        id: item.id,
+        name: item.meal.name,
+        price: parseFloat(item.meal.price.toString()),
+        quantity: item.quantity,
+        notes: item.notes,
+      })),
+    }));
 
   const inProgressOrders = notifications
-   ?.filter((n) => n.order?.status === "IN_PROGRESS")
-  .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
-  .map((n, index) => ({
-    id: n.order.id,
-    title: `Orden ${index + 1}`,
-    status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
-    createdAt: n.order.createdAt,
-    total: n.order.total,
-    notes: n.order.notes,
-    items: n.order.items.map((item) => ({
-      id: item.id,
-      name: item.meal.name,
-      price: parseFloat(item.meal.price.toString()),
-      quantity: item.quantity,
-      notes: item.notes,
-    })),
-  }));
+    ?.filter((n) => n.order?.status === "IN_PROGRESS")
+    .sort((a, b) => new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime())
+    .map((n) => ({
+      id: n.order.id,
+      notificationId: n.id, 
+      title: `Orden ${getOrderNumber(n)}`,
+      status: n.order.status.toLowerCase() as "pending" | "in_progress" | "completed",
+      createdAt: n.order.createdAt,
+      total: n.order.total,
+      notes: n.order.notes,
+      items: n.order.items.map((item) => ({
+        id: item.id,
+        name: item.meal.name,
+        price: parseFloat(item.meal.price.toString()),
+        quantity: item.quantity,
+        notes: item.notes,
+      })),
+    }));
 
   return (
     <div className="space-y-6">
@@ -77,6 +79,8 @@ export default function OrdersPage() {
               <p>Cargando...</p>
             ) : isError ? (
               <p>Error al cargar órdenes</p>
+            ) : pendingOrders && pendingOrders.length === 0 ? (
+              <p>No hay órdenes para mostrar</p>
             ) : (
               <div className="space-y-4">
                 {pendingOrders?.map((order) => (
@@ -90,13 +94,15 @@ export default function OrdersPage() {
         {/* In Progress Orders */}
         <Card>
           <CardHeader>
-            <CardTitle>En progreso</CardTitle>
+            <CardTitle>Órdenes en progreso</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <p>Cargando...</p>
             ) : isError ? (
               <p>Error al cargar órdenes</p>
+            ) : inProgressOrders && inProgressOrders.length === 0 ? (
+              <p>No hay órdenes para mostrar</p>
             ) : (
               <div className="space-y-4">
                 {inProgressOrders?.map((order) => (

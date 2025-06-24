@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock } from "lucide-react";
 import { OrderDetails } from "@/components/orders/order-details";
@@ -15,6 +15,8 @@ interface OrderPageClientProps {
 
 export function OrderPageClient({ params }: OrderPageClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const notificationId = searchParams.get("notificationId") || "";
   const { data: order, isLoading, isError } = useGetOrderQuery(params.id); 
 
   if (isLoading) {
@@ -46,7 +48,7 @@ export function OrderPageClient({ params }: OrderPageClientProps) {
         </div>
       </div>
 
-      <OrderDetails order={order} />
+      <OrderDetails order={order} notificationId={notificationId} />
     </div>
   );
 }
