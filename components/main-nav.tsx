@@ -10,40 +10,57 @@ import {
   PlusCircle,
   ClipboardList,
   Settings,
-  CookingPot
+  CookingPot,
+  LucideProps,
+  Banknote
 } from "lucide-react";
+import { Role } from "@/types/roles";
+import { ForwardRefExoticComponent, RefAttributes } from "react";
+import Cookie from "js-cookie";
 
-const navItems = [
+const navItems: {title: string, href: string, icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>, role: Role}[] = [
   {
     title: "Inicio",
     href: "/dashboard",
     icon: Home,
+    role: Role.ADMIN
   },
   {
     title: "Menú",
     href: "/dashboard/menu",
     icon: UtensilsCrossed,
+    role: Role.ADMIN
   },
   {
     title: "Agregar platillo",
     href: "/dashboard/add",
     icon: PlusCircle,
+    role: Role.ADMIN
   },
   {
     title: "Órdenes",
     href: "/dashboard/orders",
     icon: ClipboardList,
+    role: Role.ADMIN
   },
   {
     title: "Perfil",
     href: "/dashboard/profile",
     icon: Settings,
+    role: Role.ADMIN
   },
   {
     title: "Agregar restaurante",
     href: "/dashboard/new-restaurant",
     icon: CookingPot,
+    role: Role.ADMIN
   },
+  {
+    title: "Pagos pendientes",
+    href: "/dashboard/manager",
+    icon: Banknote,
+    role: Role.MANAGER
+  }
 ];
 
 interface MainNavProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -58,6 +75,7 @@ export function MainNav({
   ...props
 }: MainNavProps) {
   const pathname = usePathname();
+  const role = Cookie.get("masala-admin-role") as Role;
 
   return (
     <nav
@@ -69,6 +87,9 @@ export function MainNav({
       {...props}
     >
       {navItems.map((item) => {
+        if (item.role !== role) {
+          return null;
+        }
         const Icon = item.icon;
         return (
           <Button
