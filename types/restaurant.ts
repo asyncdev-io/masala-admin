@@ -1,4 +1,5 @@
 import { Menu } from "./menu";
+import { RestaurantCategory } from "./restaurant.category";
 
 export interface RestaurantRequest {
   name: string;
@@ -36,6 +37,8 @@ export interface Restaurant extends RestaurantRequest {
   updatedAt: string;
   menu: Menu;
   onboardingComplete: boolean;
+  category: RestaurantCategory; // Nuevo campo para la relación
+  labelIds: string[]; // Añadir para exponer las etiquetas seleccionadas
 }
 
 export interface RestaurantOnboardingCompleteResponse {
