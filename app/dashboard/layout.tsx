@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { UserNav } from "@/components/user-nav";
 import { Check, ChefHat } from "lucide-react";
 import { MobileNav } from "@/components/mobile-nav";

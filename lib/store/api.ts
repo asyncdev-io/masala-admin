@@ -9,6 +9,8 @@ import { RestaurantCategory } from "@/types/restaurant.category";
 import { Label } from "@/types/label";
 import { NotificationAPI } from "@/types/notification";
 import { CategoryMeals } from "@/types/category.meals";
+import { Role } from "@/types/roles";
+import { IPendingPayments } from "@/types/payments";
 
 interface LoginRequest {
   email: string;
@@ -124,6 +126,14 @@ export const api = createApi({
       }),
     }),
 
+    // Get pending payments for restaurant
+    getPendingPayments: builder.query<IPendingPayments[], {startDate: string, endDate: string, restaurantId?: string}>({
+      query: ({ startDate, endDate, restaurantId }) => ({
+        url: `/manager/payments/pending?startDate=${startDate}&endDate=${endDate}&restaurantId=${restaurantId}`,
+        method: "GET",
+      }),
+    }),
+
     // Menu categories endpoint
     createMenuCategory: builder.mutation<MenuCategoryResponse, MenuCategoryRequest>({
       query: (data) => ({
@@ -224,6 +234,7 @@ export const {
   useCreateRestaurantMutation,
   useCompleteRestaurantOnboardingMutation,
   useReauthOnboardingQuery,
+  useGetPendingPaymentsQuery,
   // Menu categories endpoint
   useCreateMenuCategoryMutation,
   useGetMenuCategoriesQuery,

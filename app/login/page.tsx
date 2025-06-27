@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ChefHat } from "lucide-react";
 import { useLoginMutation } from "@/lib/store/api";
 import Cookie from "js-cookie";
+import { Role } from "@/types/roles";
+import { jwtDecode } from 'jwt-decode';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -24,7 +26,12 @@ export default function LoginPage() {
       const result = await login({ email, password }).unwrap();
 
       if (result.success) {
+        // Decodificar el token
+        const payload: {email: string, names: string, role: Role} = jwtDecode(result.token);
         Cookie.set("masala-admin-token", result.token);
+        Cookie.set("masala-admin-email", payload.email);
+        Cookie.set("masala-admin-name", payload.names);
+        Cookie.set("masala-admin-role", payload.role);
         router.push("/dashboard");
         router.refresh();
       } else {
