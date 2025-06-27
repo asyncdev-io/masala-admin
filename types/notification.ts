@@ -9,6 +9,7 @@ export interface NotificationAPI {
     createdAt: string;
     total: number;
     notes?: string; 
+    tip?: number | string;
     items: {
       id: string;
       quantity: number;
@@ -16,6 +17,7 @@ export interface NotificationAPI {
       meal: {
         name: string;
         price: string | number;
+        finalCustomerPrice?: string;
       };
     }[];
   };

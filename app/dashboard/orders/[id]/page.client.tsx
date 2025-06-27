@@ -6,21 +6,23 @@ import { ArrowLeft, Clock } from "lucide-react";
 import { OrderDetails } from "@/components/orders/order-details";
 import { formatRelativeTime } from "@/lib/utils/date";
 import { useGetOrderQuery } from "@/lib/store/api"; 
+import Loader from "@/components/ui/loader";
 
 interface OrderPageClientProps {
   params: {
     id: string;
   };
+  onOrderUpdated?: () => void;
 }
 
-export function OrderPageClient({ params }: OrderPageClientProps) {
+export function OrderPageClient({ params, onOrderUpdated }: OrderPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const notificationId = searchParams.get("notificationId") || "";
   const { data: order, isLoading, isError } = useGetOrderQuery(params.id); 
 
   if (isLoading) {
-    return <p>Cargando orden...</p>;
+    return <Loader size="md" />;
   }
 
   if (isError || !order) {
@@ -48,7 +50,7 @@ export function OrderPageClient({ params }: OrderPageClientProps) {
         </div>
       </div>
 
-      <OrderDetails order={order} notificationId={notificationId} />
+      <OrderDetails order={order} notificationId={notificationId} onOrderUpdated={onOrderUpdated} />
     </div>
   );
 }
