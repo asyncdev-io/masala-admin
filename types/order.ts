@@ -24,4 +24,5 @@ export interface Order {
   total: number;
   createdAt: string;
   notes?: string;
+  tip?: number;
 }
