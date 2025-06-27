@@ -243,4 +243,5 @@ export const {
   // Confirm and Cancel the order
   useConfirmOrderMutation,
   useCancelOrderMutation,
+  useUpdateRestaurantMutation,
 } = api;
