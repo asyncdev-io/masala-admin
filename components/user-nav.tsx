@@ -14,9 +14,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Cookies from "js-cookie";
 import { Role } from "@/types/roles";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setSelectedRestaurant } from "@/lib/store/restaurantSlice";
+import { api } from "@/lib/store/api";
 
 export function UserNav() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [mounted, setMounted] = useState(false);
   const [userInfo, setUserInfo] = useState({
     name: '',
@@ -40,6 +44,13 @@ export function UserNav() {
     Cookies.remove("masala-admin-role");
     router.push("/login");
     router.refresh();
+    dispatch(setSelectedRestaurant({
+      id: '',
+      name: '',
+      menuId: '',
+      hasCompleteOnboarding: false,
+    }));
+    dispatch(api.util.resetApiState());
   };
 
   const fallbackLetter = mounted && userInfo.role ?
