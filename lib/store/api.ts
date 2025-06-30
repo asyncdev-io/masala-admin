@@ -1,15 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Order } from "@/types/order";
-import { CreateRestaurantRequest, CreateRestaurantResponse, Restaurant, RestaurantOnboardingCompleteResponse, RestaurantReAuthOnboardingRequest, RestaurantRequest } from "@/types/restaurant";
+import { CreateRestaurantResponse, Restaurant, RestaurantOnboardingCompleteResponse, RestaurantReAuthOnboardingRequest, RestaurantRequest } from "@/types/restaurant";
 import Cookie from "js-cookie"
 import { Category } from "@/types/category";
 import { MenuImportRequest, MenuImportResponse } from "@/types/menu";
-import { CreateMealRequest, CreateMealResponse, Meal } from "@/types/meal";
+import { CreateMealResponse, Meal } from "@/types/meal";
 import { RestaurantCategory } from "@/types/restaurant.category";
 import { Label } from "@/types/label";
 import { NotificationAPI } from "@/types/notification";
 import { CategoryMeals } from "@/types/category.meals";
-import { Role } from "@/types/roles";
 import { IPendingPayments } from "@/types/payments";
 
 interface LoginRequest {
@@ -46,7 +45,7 @@ export const api = createApi({
       return headers;
     }
   }),
-  tagTypes: ["Orders", "Auth", "Restaurants", "MenuCategories", "Meals"],
+  tagTypes: ["Orders", "Auth", "Restaurants", "MenuCategories", "Meals", "PendingPayments"],
   endpoints: (builder) => ({
     // Auth endpoints
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -132,6 +131,7 @@ export const api = createApi({
         url: `/manager/payments/pending?startDate=${startDate}&endDate=${endDate}&restaurantId=${restaurantId}`,
         method: "GET",
       }),
+      providesTags: ["PendingPayments"]
     }),
 
     // Menu categories endpoint
