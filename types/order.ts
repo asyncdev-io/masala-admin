@@ -3,7 +3,7 @@ export interface OrderItem {
   name: string;
   quantity: number;
   price: number;
-  mealPrice: number;
+  mealPrice?: number;
   notes?: string;
   meal?: {
     id: string;

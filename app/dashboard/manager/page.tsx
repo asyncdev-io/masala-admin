@@ -87,7 +87,7 @@ export default function page() {
                                   order.items.map((item, itemIndex) => (
                                     <li key={itemIndex} className='flex justify-between items-start text-gray-800 text-sm'>
                                       <p>{item.quantity} x {item.meal?.name}</p>
-                                      <p>{item.quantity * (item.mealPrice)}</p>
+                                      <p>{item.mealPrice && (item.quantity * (item.mealPrice))}</p>
                                     </li>
                                   ))
                                 }
