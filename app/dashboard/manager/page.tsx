@@ -77,11 +77,11 @@ export default function page() {
                           <div className='flex flex-col gap-1'>
                             <span className='font-medium'>Order #{order.id}</span>
                             <div className='grid grid-cols-2 text-sm text-gray-700 border-b border-gray-300'>
-                              <p className='text-sm text-gray-600'><strong>Total:</strong> {order.total}</p>
-                              <p className='text-left'><strong>Creada en:</strong> {new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString()}</p>
+                              <p className='text-sm font-bold'>Total: {order.total}</p>
+                              <p className='text-left font-bold'>Creada en: {new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString()}</p>
                             </div>
                             <div>
-                              <p><strong>Comidas</strong></p>
+                              <p className='font-bold'>Comidas</p>
                               <ul className='space-y-3'>
                                 {
                                   order.items.map((item, itemIndex) => (
