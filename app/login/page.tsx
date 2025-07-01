@@ -74,6 +74,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
                 required
+                data-cy="email-input"
               />
             </div>
             <div className="space-y-2">
@@ -84,9 +85,10 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 required
+                data-cy="password-input"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading} data-cy="login-btn">
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>

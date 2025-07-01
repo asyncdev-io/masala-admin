@@ -107,6 +107,7 @@ export default function NewRestaurantPage() {
               onClick={() => {
                 window.open(response.stripeOnboardingUrl, "_blank", "noopener,noreferrer");
               }}
+              data-cy="complete-registration-btn"
             >
               Completar registro
             </Button>
@@ -148,7 +149,14 @@ export default function NewRestaurantPage() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="name">Nombre del Restaurante</Label>
-              <Input value={restaurantDetails.name} id="name" placeholder="Ingrese el nombre del restaurante" data-restaurant-detail-field="name" onChange={handleRestaurantDetilChange} />
+              <Input
+                value={restaurantDetails.name}
+                id="name"
+                placeholder="Ingrese el nombre del restaurante"
+                data-restaurant-detail-field="name"
+                onChange={handleRestaurantDetilChange}
+                data-cy="name-input"
+              />
             </div>
 
             <div className="space-y-2">
@@ -160,23 +168,34 @@ export default function NewRestaurantPage() {
                 data-restaurant-detail-field="description"
                 onChange={handleRestaurantDetilChange}
                 value={restaurantDetails.description}
+                data-cy="description-input"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="image">Imagen del Restaurante</Label>
-              <Input id="image" type="file" accept="image/*" ref={uploadImgInputRef} />
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                ref={uploadImgInputRef}
+                data-cy="image-input"
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="category">Categoría</Label>
-              <Select value={restaurantDetails.categoryId} onValueChange={(value) => setRestaurantDetails({ ...restaurantDetails, categoryId: value })}>
-                <SelectTrigger>
+              <Select
+                value={restaurantDetails.categoryId}
+                onValueChange={(value) => setRestaurantDetails({ ...restaurantDetails, categoryId: value })}
+                data-cy="category-input"
+              >
+                <SelectTrigger data-cy="category-select-trigger">
                   <SelectValue placeholder="Seleccione una categoría" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories && categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
+                    <SelectItem key={category.id} value={category.id} data-cy={`category-select-item-${category.name.replaceAll(' ', '').toLowerCase()}`}>
                       {category.name}
                     </SelectItem>
                   ))}
@@ -186,13 +205,21 @@ export default function NewRestaurantPage() {
 
             <div className="space-y-2">
               <Label htmlFor="email">Correo Electrónico</Label>
-              <Input value={restaurantDetails.email} id="email" type="email" placeholder="correo@ejemplo.com" data-restaurant-detail-field="email" onChange={handleRestaurantDetilChange} />
+              <Input
+                value={restaurantDetails.email}
+                id="email"
+                type="email"
+                placeholder="correo@ejemplo.com"
+                data-restaurant-detail-field="email"
+                onChange={handleRestaurantDetilChange}
+                data-cy="email-input"
+              />
             </div>
 
             <div className="space-y-2">
               <Label>Etiquetas</Label>
-              <Select onValueChange={handleLabelSelect}>
-                <SelectTrigger>
+              <Select onValueChange={handleLabelSelect} data-cy="tags-input">
+                <SelectTrigger data-cy="select-label-trigger">
                   <SelectValue placeholder="Agregar etiqueta" />
                 </SelectTrigger>
                 <SelectContent>
@@ -201,6 +228,7 @@ export default function NewRestaurantPage() {
                       key={label.id}
                       value={label.id}
                       disabled={selectedLabels.includes(label.id)}
+                      data-cy={`select-label-item-${label.name.replaceAll(' ', '').toLowerCase()}`}
                     >
                       {label.name}
                     </SelectItem>
@@ -227,7 +255,7 @@ export default function NewRestaurantPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading} data-cy="create-restaurant-btn">
               {isLoading ? (
                 <>
                   <Loader size="sm" />

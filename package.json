@@ -6,7 +6,10 @@
     "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test:e2e": "start-server-and-test start http://localhost:3001 cypress:run"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -74,6 +77,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/js-cookie": "^3.0.6"
+    "@types/js-cookie": "^3.0.6",
+    "cypress": "^14.5.0",
+    "start-server-and-test": "^2.0.12"
   }
 }
