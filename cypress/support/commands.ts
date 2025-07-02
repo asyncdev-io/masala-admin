@@ -30,7 +30,7 @@ import { jwtDecode } from "jwt-decode";
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
 
-Cypress.Commands.add('apiLogin', (email, password) => {
+Cypress.Commands.add('testApiLogin', (email, password) => {
   cy.request('POST', '/auth/login-admin', { email, password })
     .then((response) => {
       expect(response.status).to.eq(200);
@@ -44,18 +44,28 @@ Cypress.Commands.add('apiLogin', (email, password) => {
     });
 });
 
-Cypress.Commands.add('login', (email, password) => {
+Cypress.Commands.add('testLogin', (email, password) => {
   cy.visit('/login');
   cy.get('[data-cy=email-input]').type(email);
   cy.get('[data-cy=password-input]').type(password);
   cy.get('[data-cy=login-btn]').click();
-})
+});
 
+Cypress.Commands.add('testSelectRestaurant', () => {
+  // ---- Select a restaurant
+  // Open dropdown menu
+  cy.get("[data-cy=select-restaurant-trigger]").click();
+  // Select a restaurant
+  cy.get("[data-cy^=select-restaurant-option-]").first().click();
+});
+
+// To export commands to the global scope, add them to the Cypress namespace.
 declare global {
   namespace Cypress {
     interface Chainable {
-      apiLogin(email: string, password: string): Chainable<any>;
-      login(email: string, password: string): Chainable<any>;
+      testApiLogin(email: string, password: string): Chainable<any>;
+      testLogin(email: string, password: string): Chainable<any>;
+      testSelectRestaurant(): Chainable<any>;
     }
   }
 }
