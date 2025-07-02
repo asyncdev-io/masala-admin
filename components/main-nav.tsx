@@ -15,10 +15,10 @@ import {
   Banknote
 } from "lucide-react";
 import { Role } from "@/types/roles";
-import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { ForwardRefExoticComponent, RefAttributes, useEffect, useState } from "react";
 import Cookie from "js-cookie";
 
-const navItems: {title: string, href: string, icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>, role: Role}[] = [
+const navItems: { title: string, href: string, icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>, role: Role }[] = [
   {
     title: "Inicio",
     href: "/dashboard",
@@ -75,7 +75,21 @@ export function MainNav({
   ...props
 }: MainNavProps) {
   const pathname = usePathname();
+  const [userRole, setUserRole] = useState<Role | null>(null);
+  const [mounted, setMounted] = useState(false);
   const role = Cookie.get("masala-admin-role") as Role;
+
+  // Para que se inicilice el componente y se obtenga la cookie del lado del cliente
+  useEffect(() => {
+    const roleFromCookie = Cookie.get("masala-admin-role") as Role;
+    setUserRole(roleFromCookie);
+    setMounted(true);
+  }, []);
+
+  // Filtrar los elementos del menú según el rol del usuario
+  const renderedNavItems = mounted
+    ? navItems.filter((item) => item.role === userRole)
+    : [];
 
   return (
     <nav
@@ -86,7 +100,7 @@ export function MainNav({
       )}
       {...props}
     >
-      {navItems.map((item) => {
+      {renderedNavItems.map((item) => {
         if (item.role !== role) {
           return null;
         }
