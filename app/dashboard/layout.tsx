@@ -36,13 +36,17 @@ export default function DashboardLayout({
               <span>{selectedRestaurant.name}</span>
               {
                 selectedRestaurant.hasCompleteOnboarding ?
-                // Checkmark
-                <span className="bg-green-300 rounded-full p-1"><Check className="h-6 w-6"/></span>
-                :
-                // Button to complete onboarding
-                <Link href={`/onboarding/reauth?restaurantId=${selectedRestaurant.id}`} className="ml-2 px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">
-                  Completar onboarding
-                </Link>
+                  // Checkmark
+                  <span className="bg-green-300 rounded-full p-1"><Check className="h-6 w-6" /></span>
+                  :
+                  // Button to complete onboarding
+                  <Link
+                    href={`/onboarding/reauth?restaurantId=${selectedRestaurant.id}`}
+                    className="ml-2 px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full"
+                    data-cy="complete-onboarding-link"
+                  >
+                    Completar onboarding
+                  </Link>
               }
             </div>
           )}
