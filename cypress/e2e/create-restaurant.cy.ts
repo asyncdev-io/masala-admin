@@ -1,8 +1,10 @@
+import { testUILoginCredentials } from "../support/commands";
+
 describe('Restaurant', () => {
   beforeEach(() => {
     cy.viewport(1024, 720);
     // Use login UI command
-    cy.testLogin('test@manager.com', '12345678');
+    cy.testLogin(testUILoginCredentials.email, testUILoginCredentials.password);
   });
 
   it('should create a restaurant', () => {

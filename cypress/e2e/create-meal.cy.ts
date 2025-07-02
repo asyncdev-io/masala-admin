@@ -1,9 +1,11 @@
+import { testRestaurantName, testUILoginCredentials } from "../support/commands";
+
 describe('Category Meal', () => {
 
   beforeEach(() => {
     cy.viewport(1024, 720);
     // Use login UI command
-    cy.testLogin('test@manager.com', '12345678');
+    cy.testLogin(testUILoginCredentials.email, testUILoginCredentials.password);
   });
 
   it('should create a category', () => {
@@ -11,7 +13,7 @@ describe('Category Meal', () => {
     cy.url().should('include', '/dashboard');
 
     // ---- Select a restaurant
-    cy.testSelectRestaurant();
+    cy.testSelectRestaurant(testRestaurantName);
 
     // ---- Go to "Agregar platillo" page
     cy.get("[data-cy=main-nav-agregar-platillo]").click();
@@ -33,7 +35,7 @@ describe('Category Meal', () => {
     cy.url().should('include', '/dashboard');
 
     // ---- Select a restaurant
-    cy.testSelectRestaurant();
+    cy.testSelectRestaurant(testRestaurantName);
 
     // ---- Go to "Agregar platillo" page
     cy.get("[data-cy=main-nav-agregar-platillo]").click();

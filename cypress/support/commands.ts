@@ -51,12 +51,12 @@ Cypress.Commands.add('testLogin', (email, password) => {
   cy.get('[data-cy=login-btn]').click();
 });
 
-Cypress.Commands.add('testSelectRestaurant', () => {
+Cypress.Commands.add('testSelectRestaurant', (restaurantName) => {
   // ---- Select a restaurant
   // Open dropdown menu
   cy.get("[data-cy=select-restaurant-trigger]").click();
   // Select a restaurant
-  cy.get("[data-cy^=select-restaurant-option-]").first().click();
+  cy.get("[data-cy^=select-restaurant-option-]").contains(restaurantName).click();
 });
 
 // To export commands to the global scope, add them to the Cypress namespace.
@@ -65,9 +65,16 @@ declare global {
     interface Chainable {
       testApiLogin(email: string, password: string): Chainable<any>;
       testLogin(email: string, password: string): Chainable<any>;
-      testSelectRestaurant(): Chainable<any>;
+      testSelectRestaurant(restaurantName: string): Chainable<any>;
     }
   }
 }
 
-export { };
+const testUILoginCredentials = {
+  email: 'test@manager.com',
+  password: '12345678'
+}
+
+const testRestaurantName = "Test Restaurant Name";
+
+export { testUILoginCredentials, testRestaurantName };
