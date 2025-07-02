@@ -108,7 +108,7 @@ export default function MealForm({ mealId, initialData }: MealFormProps) {
             <Input
               type="file"
               accept="image/png, image/jpeg"
-              id="dish-image" // Renombra para evitar conflicto con 'dish-name'
+              id="dish-image"
               placeholder="URL imagen"
               ref={uploadImgInputRef}
               onChange={handleFileChange} // Usa handleFileChange del hook
