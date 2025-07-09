@@ -117,7 +117,7 @@ export function MainNav({
             asChild
             onClick={onNavigate}
           >
-            <Link href={item.href}>
+            <Link href={item.href} data-cy={`main-nav-${item.title.replaceAll(' ', '-').toLowerCase()}`}>
               <Icon className="h-4 w-4" />
               {item.title}
             </Link>

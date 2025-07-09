@@ -24,8 +24,6 @@ export default function ReAuth() {
   }
   const { data } = useReauthOnboardingQuery({restaurantId});
 
-  console.log(data);
-
   return (
     <div className='flex flex-col justify-center align-middle place-items-center min-h-screen'>
       {
@@ -39,7 +37,7 @@ export default function ReAuth() {
         :
         (
           <Button>
-            <Link href={data.stripeOnboardingUrl} target='_blank'>Completa tu onboarding</Link>
+            <Link href={data.stripeOnboardingUrl} target='_blank' data-cy="complete-onboarding-btn">Completa tu onboarding</Link>
           </Button>
         )
       }

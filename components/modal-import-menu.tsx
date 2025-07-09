@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 import { CircleX } from 'lucide-react';
 import Loader from './ui/loader';
 
-// TODO: Add a loader while importing menu
 export default function ModalImportMenu({ showModalMenuImport }: { showModalMenuImport: Function }) {
 
   const [isLoading, setIsLoading] = useState(false);
@@ -81,6 +80,7 @@ export default function ModalImportMenu({ showModalMenuImport }: { showModalMenu
           <select
             className="w-full p-2 border rounded mb-4"
             onChange={(e) => sourceMenuIdRef.current = e.target.value}
+            data-cy="modal-select-restaurant"
           >
             <option value="">Select a restaurant</option>
             {
@@ -100,14 +100,16 @@ export default function ModalImportMenu({ showModalMenuImport }: { showModalMenu
 
           <button
             onClick={handleImportMenu}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" disabled={isLoading}>
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" disabled={isLoading}
+            data-cy="modal-import-btn"
+          >
             {isLoading ? (
               <>
                 <Loader size="sm" />
                 <span className="ml-2">Importando menus...</span>
               </>
             ) : (
-              "Crear Restaurante"
+              "Importar menu"
             )}
           </button>
 
@@ -116,7 +118,7 @@ export default function ModalImportMenu({ showModalMenuImport }: { showModalMenu
           }
 
           {
-            userFeedbackMessages.success && <p className="text-green-500 mt-2">{userFeedbackMessages.success}</p>
+            userFeedbackMessages.success && <p className="text-green-500 mt-2" data-cy="import-menu-success-text">{userFeedbackMessages.success}</p>
           }
         </div>
       </div>

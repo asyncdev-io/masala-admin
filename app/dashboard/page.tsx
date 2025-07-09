@@ -32,7 +32,7 @@ export default function DashboardPage() {
       {/* Dropdown to select the restaurant */}
       <div className="max-w-xs">
         <Select value={selectedRestaurant.id || undefined} onValueChange={handleRestaurantChange}>
-          <SelectTrigger>
+          <SelectTrigger data-cy="select-restaurant-trigger">
             <SelectValue placeholder="Selecciona un restaurante" />
           </SelectTrigger>
           <SelectContent>
@@ -43,7 +43,7 @@ export default function DashboardPage() {
               </SelectItem>
             }
             {restaurants?.map((restaurant) => (
-              <SelectItem key={restaurant.id} value={restaurant.id}>
+              <SelectItem key={restaurant.id} value={restaurant.id} data-cy={`select-restaurant-option-${restaurant.name.replaceAll(' ', '').toLowerCase()}`}>
                 {restaurant.name}
               </SelectItem>
             ))}

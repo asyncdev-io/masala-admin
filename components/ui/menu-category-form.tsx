@@ -32,14 +32,15 @@ export default function MenuCategoryForm () {
               placeholder="e.g., Main Course"
               onChange={(e) => setMenuName(e.target.value)}
               disabled={!selectedRestaurantMenuId} // Deshabilitar si no hay menú seleccionado
+              data-cy="category-name-input"
             />
           </div>
-          <Button type="submit" disabled={isLoading.createMenuCategory || !selectedRestaurantMenuId}>
+          <Button type="submit" disabled={isLoading.createMenuCategory || !selectedRestaurantMenuId} data-cy="category-create-btn">
             Agregar Categoría
           </Button>
           {isLoading.createMenuCategory && <Loader />}
           {menuCategoryResponseMessage.error && <p className="text-red-500">{menuCategoryResponseMessage.error}</p>}
-          {menuCategoryResponseMessage.success && <p className="text-green-500">{menuCategoryResponseMessage.success}</p>}
+          {menuCategoryResponseMessage.success && <p className="text-green-500" data-cy="category-success-text">{menuCategoryResponseMessage.success}</p>}
         </form>
       </CardContent>
     </Card>

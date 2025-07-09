@@ -62,6 +62,7 @@ export default function MealForm({ mealId, initialData }: MealFormProps) {
               placeholder="e.g., Classic Burger"
               data-menu-detail-field="name"
               onChange={handleMealDetilChange}
+              data-cy="meal-name-input"
             />
           </div>
           <div className="space-y-2">
@@ -70,13 +71,15 @@ export default function MealForm({ mealId, initialData }: MealFormProps) {
               value={mealDetails.category.id}
               onValueChange={(value) => setMealDetails({ ...mealDetails, category: { id: value, name: '', menu: null } })}
             >
-              <SelectTrigger>
+              <SelectTrigger data-cy="meal-select-category">
                 <SelectValue placeholder="Selecciona una categoría" />
               </SelectTrigger>
               <SelectContent>
                 {categories && categories.length > 0 ? (
                   categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+                    <SelectItem key={category.id} value={category.id} data-cy={`meal-select-category-option-${category.name.replaceAll(' ', '').toLowerCase()}`}>
+                      {category.name}
+                    </SelectItem>
                   ))
                 ) : (
                   <SelectItem value="-1" disabled>No hay categorías disponibles</SelectItem>
@@ -94,6 +97,7 @@ export default function MealForm({ mealId, initialData }: MealFormProps) {
               placeholder="Coloca el precio"
               data-menu-detail-field="price"
               onChange={handleMealDetilChange}
+              data-cy="meal-price-input"
             />
             <p className="text-sm text-gray-500">
               Nota: Este es el precio que usted recibirá por cada platillo vendido pero la plataforma aplicará comisiones y por ello este precio subirá al cliente final.
@@ -107,7 +111,8 @@ export default function MealForm({ mealId, initialData }: MealFormProps) {
               id="dish-image"
               placeholder="URL imagen"
               ref={uploadImgInputRef}
-              onChange={handleFileChange}
+              onChange={handleFileChange} // Usa handleFileChange del hook
+              data-cy="meal-image-input"
             />
           </div>
           <div className="space-y-2">
@@ -118,9 +123,10 @@ export default function MealForm({ mealId, initialData }: MealFormProps) {
               placeholder="Coloca la descripción del platillo"
               data-menu-detail-field="description"
               onChange={handleMealDetilChange}
+              data-cy="meal-description-input"
             />
           </div>
-          <Button type="submit" disabled={isLoading.createMeal || isLoading.updateMeal}>
+          <Button type="submit" disabled={isLoading.createMeal || isLoading.updateMeal} data-cy="meal-create-btn">
             {
               isLoading.createMeal ||
                 isLoading.updateMeal ?
@@ -134,7 +140,7 @@ export default function MealForm({ mealId, initialData }: MealFormProps) {
           </Button>
 
           {mealResponse.error && <p className="text-red-500">{mealResponse.error}</p>}
-          {mealResponse.success && <p className="text-green-500">{mealResponse.success}</p>}
+          {mealResponse.success && <p className="text-green-500" data-cy="meal-success-text">{mealResponse.success}</p>}
         </form>
       </CardContent>
     </Card>

@@ -34,7 +34,7 @@ export default function MenuPage() {
         <Button asChild>
           {
             selectedRestaurantMenuId ?
-              <button onClick={() => setShowModalMenuImport(true)}>
+              <button onClick={() => setShowModalMenuImport(true)} data-cy="import-menu-btn">
                 Importe un menu de otro restaurante
               </button>
               :
