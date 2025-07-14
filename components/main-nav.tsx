@@ -12,7 +12,8 @@ import {
   Settings,
   CookingPot,
   LucideProps,
-  Banknote
+  Banknote,
+  HandCoinsIcon
 } from "lucide-react";
 import { Role } from "@/types/roles";
 import { ForwardRefExoticComponent, RefAttributes, useEffect, useState } from "react";
@@ -59,6 +60,12 @@ const navItems: { title: string, href: string, icon: ForwardRefExoticComponent<O
     title: "Pagos pendientes",
     href: "/dashboard/manager",
     icon: Banknote,
+    role: Role.MANAGER
+  },
+  {
+    title: "Comisiones",
+    href: "/dashboard/manager/miscellaneous",
+    icon: HandCoinsIcon,
     role: Role.MANAGER
   }
 ];
