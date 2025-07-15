@@ -45,7 +45,7 @@ export const api = createApi({
       return headers;
     }
   }),
-  tagTypes: ["Orders", "Auth", "Restaurants", "MenuCategories", "Meals", "PendingPayments"],
+  tagTypes: ["Orders", "Auth", "Restaurants", "MenuCategories", "Meals", "PendingPayments", "CommissionRate"],
   endpoints: (builder) => ({
     // Auth endpoints
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -119,14 +119,14 @@ export const api = createApi({
     }),
 
     reauthOnboarding: builder.query<Pick<CreateRestaurantResponse, 'stripeOnboardingUrl'>, RestaurantReAuthOnboardingRequest>({
-      query: ({restaurantId}) => ({
+      query: ({ restaurantId }) => ({
         url: `/restaurants/onboarding/re-auth/${restaurantId}`,
         method: "GET"
       }),
     }),
 
     // Get pending payments for restaurant
-    getPendingPayments: builder.query<IPendingPayments[], {startDate: string, endDate: string, restaurantId?: string}>({
+    getPendingPayments: builder.query<IPendingPayments[], { startDate: string, endDate: string, restaurantId?: string }>({
       query: ({ startDate, endDate, restaurantId }) => ({
         url: `/manager/payments/pending?startDate=${startDate}&endDate=${endDate}&restaurantId=${restaurantId}`,
         method: "GET",
@@ -170,7 +170,7 @@ export const api = createApi({
     }),
 
     updateMeal: builder.mutation<CreateMealResponse, { id: string; data: FormData; }>({
-      query: ({id, data}) => ({
+      query: ({ id, data }) => ({
         url: `/meals/${id}`,
         method: "PATCH",
         body: data
@@ -201,23 +201,46 @@ export const api = createApi({
     }),
     //Notification endpoints
     getNotificationsByRestaurant: builder.query<NotificationAPI[], string>({
-    query: (restaurantId) => `/restaurants/notifications/${restaurantId}`,
+      query: (restaurantId) => `/restaurants/notifications/${restaurantId}`,
     }),
     // Confirm and Cancel the order
-  confirmOrder: builder.mutation<any, string>({
-  query: (notificationId) => ({
-    url: `/restaurants/notifications/${notificationId}/confirm`,
-    method: "POST",
-  }),
-  invalidatesTags: ["Orders", "Auth"],
-}),
-cancelOrder: builder.mutation<any, string>({
-  query: (notificationId) => ({
-    url: `/restaurants/notifications/${notificationId}/cancel`,
-    method: "POST",
-  }),
-  invalidatesTags: ["Orders", "Auth"],
-  }),
+    confirmOrder: builder.mutation<any, string>({
+      query: (notificationId) => ({
+        url: `/restaurants/notifications/${notificationId}/confirm`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Orders", "Auth"],
+    }),
+    cancelOrder: builder.mutation<any, string>({
+      query: (notificationId) => ({
+        url: `/restaurants/notifications/${notificationId}/cancel`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Orders", "Auth"],
+    }),
+
+    // Miscellaneous endpoints
+    getCommissionRate: builder.query<{ comissionRate: number }, void>({
+      query: () => '/miscellaneous/comission-rate',
+      providesTags: ["CommissionRate"]
+    }),
+
+    updateCommissionRate: builder.mutation<{ comissionRate: number }, { newComissionRate: number }>({
+      query: ({newComissionRate}) => ({
+        url: '/miscellaneous/comission-rate',
+        method: 'PATCH',
+        body: { comissionRate: newComissionRate  }
+      }),
+      invalidatesTags: ["CommissionRate"]
+    }),
+
+    deleteCommissionsRates: builder.mutation<boolean, string>({
+      query: (id) => ({
+        url: `/miscellaneous/comission-rate/delete-except/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ["CommissionRate"]
+    }),
 
   }),
 });
@@ -255,4 +278,8 @@ export const {
   useConfirmOrderMutation,
   useCancelOrderMutation,
   useUpdateRestaurantMutation,
+  // Miscellaneous endpoints
+  useGetCommissionRateQuery,
+  useUpdateCommissionRateMutation,
+  useDeleteCommissionsRatesMutation
 } = api;

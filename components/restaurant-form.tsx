@@ -143,7 +143,7 @@ export default function RestaurantForm({
           </div>
         )}
         <Input id="image" type="file" accept="image/*" ref={uploadImgInputRef} />
-        
+
       </div>
       <div className="space-y-2">
         <Label htmlFor="category">Categoría</Label>
