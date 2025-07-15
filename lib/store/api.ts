@@ -234,11 +234,10 @@ export const api = createApi({
       invalidatesTags: ["CommissionRate"]
     }),
 
-    createCommissionRate: builder.mutation<{ comissionRate: number }, { newComissionRate: number }>({
-      query: ({newComissionRate}) => ({
-        url: '/miscellaneous/comission-rate',
-        method: 'POST',
-        body: { comissionRate: newComissionRate  }
+    deleteCommissionsRates: builder.mutation<boolean, string>({
+      query: (id) => ({
+        url: `/miscellaneous/comission-rate/delete-except/${id}`,
+        method: 'DELETE',
       }),
       invalidatesTags: ["CommissionRate"]
     }),
@@ -281,5 +280,6 @@ export const {
   useUpdateRestaurantMutation,
   // Miscellaneous endpoints
   useGetCommissionRateQuery,
-  useUpdateCommissionRateMutation
+  useUpdateCommissionRateMutation,
+  useDeleteCommissionsRatesMutation
 } = api;
